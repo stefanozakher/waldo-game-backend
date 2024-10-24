@@ -1,7 +1,7 @@
 // script.js
 
 // Connect to the server
-const socket = io();
+const socket = io('https://waldo-game-backend.onrender.com');
 
 // Get references to HTML elements
 const loginDiv = document.getElementById('login');
@@ -75,15 +75,14 @@ gameImage.addEventListener('click', (event) => {
 
 // Handle the characterFound event
 socket.on('characterFound', ({ username, character, players }) => {
-    alert(`${username} found ${character}!`);
-  
-    // Update the scoreboard
-    playersList.innerHTML = '';
-    for (let id in players) {
-      const player = players[id];
-      const listItem = document.createElement('li');
-      listItem.textContent = `${player.username}: ${player.score} points`;
-      playersList.appendChild(listItem);
-    }
-  });
-  
+  alert(`${username} found ${character}!`);
+
+  // Update the scoreboard
+  playersList.innerHTML = '';
+  for (let id in players) {
+    const player = players[id];
+    const listItem = document.createElement('li');
+    listItem.textContent = `${player.username}: ${player.score} points`;
+    playersList.appendChild(listItem);
+  }
+});
