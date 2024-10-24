@@ -1,7 +1,7 @@
 // script.js
 
 // Connect to the server
-const socket = io('https://waldo-game-backend.onrender.com');
+const socket = io();
 
 // Get references to HTML elements
 const loginDiv = document.getElementById('login');
@@ -41,9 +41,9 @@ socket.on('playerList', (players) => {
     }
   });
   
-  // script.js
 
-// ...existing code...
+
+
 
 // Handle the timerUpdate event
 socket.on('timerUpdate', (timeLeft) => {
@@ -55,9 +55,8 @@ socket.on('gameOver', () => {
   alert('Game over!');
   // Optionally, implement logic to reset the game
 });
-// script.js
 
-// ...existing code...
+
 
 // Handle clicks on the game image
 gameImage.addEventListener('click', (event) => {
@@ -69,9 +68,6 @@ gameImage.addEventListener('click', (event) => {
     // Emit the imageClick event to the server
     socket.emit('imageClick', { x, y });
   });
-// script.js
-
-// ...existing code...
 
 // Handle the characterFound event
 socket.on('characterFound', ({ username, character, players }) => {
