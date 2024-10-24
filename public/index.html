@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Where's Waldo Game</title>
+  <!-- Add basic styling -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    #gameArea {
+      position: relative;
+      display: inline-block;
+    }
+    #gameImage {
+      max-width: 100%;
+      height: auto;
+    }
+    #timer, #scoreboard {
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Where's Waldo Multiplayer Game</h1>
+  <div id="login">
+    <input type="text" id="usernameInput" placeholder="Enter your nickname" />
+    <button id="joinBtn">Join Game</button>
+  </div>
+  <div id="game" style="display:none;">
+    <div id="timer">Time Left: <span id="timeLeft">300</span>s</div>
+    <div id="gameArea">
+      <img id="gameImage" src="waldo.jpg" alt="Find Waldo" />
+    </div>
+    <div id="scoreboard">
+      <h2>Scoreboard</h2>
+      <ul id="playersList"></ul>
+    </div>
+  </div>
+
+  <!-- Include Socket.IO client library -->
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- Include our client-side JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
