@@ -36,7 +36,7 @@ socket.on('playerList', (players) => {
     for (let id in players) {
       const player = players[id];
       const listItem = document.createElement('li');
-      listItem.textContent = `${player.username}: ${player.score} points`;
+      listItem.textContent = `${player.username}: ${player.score} points (Total: ${player.totalScore || 0})`;
       playersList.appendChild(listItem);
     }
   });
@@ -71,14 +71,34 @@ gameImage.addEventListener('click', (event) => {
 
 // Handle the characterFound event
 socket.on('characterFound', ({ username, character, players }) => {
-  alert(`${username} found ${character}!`);
+    alert(`${username} found ${character}!`);
+  
+    // Update the scoreboard
+    playersList.innerHTML = '';
+    for (let id in players) {
+      const player = players[id];
+      const listItem = document.createElement('li');
+      listItem.textContent = `${player.username}: ${player.score} points (Total: ${player.totalScore || 0})`;
+      playersList.appendChild(listItem);
+    }
+  });
+// Get reference to the Play Again button
+const playAgainBtn = document.getElementById('playAgainBtn');
 
-  // Update the scoreboard
+// Handle the gameOver event
+socket.on('gameOver', () => {
+  alert('Game over!');
+  playAgainBtn.style.display = 'block';
+});
+
+// Handle Play Again button click
+playAgainBtn.addEventListener('click', () => {
+  socket.emit('playAgain');
+  playAgainBtn.style.display = 'none';
+});
+
+// Handle gameRestart event
+socket.on('gameRestart', () => {
+  timeLeftSpan.textContent = '300';
   playersList.innerHTML = '';
-  for (let id in players) {
-    const player = players[id];
-    const listItem = document.createElement('li');
-    listItem.textContent = `${player.username}: ${player.score} points`;
-    playersList.appendChild(listItem);
-  }
 });
