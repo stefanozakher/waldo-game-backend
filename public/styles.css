@@ -1,0 +1,29 @@
+/* Custom styles */
+
+/* Avatar image styling */
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+/* Chat window styling */
+#chatWindow {
+  background-color: #f9f9f9;
+}
+
+/* Scrollbar styling (optional) */
+#chatWindow::-webkit-scrollbar {
+  width: 6px;
+}
+
+#chatWindow::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+
+/* Admin label styling */
+.admin-label {
+  font-size: 0.8em;
+  color: #007bff;
+} 
