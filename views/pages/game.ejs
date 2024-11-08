@@ -1,0 +1,39 @@
+<!-- views/pages/game.ejs -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Game Session: <%= gameSession.short_id %></h2>
+                    <p class="mb-0">Time: <%= gameSession.playtime_in_seconds %> seconds</p>
+                </div>
+                <div class="card-body">
+                    <h3>Players</h3>
+                    <ul class="list-group" id="playersList">
+                    </ul>
+                    
+                    <!-- Add this new div for the start button -->
+                    <div id="startGameContainer" class="text-center mt-3" style="display: none;">
+                        <button class="btn btn-success btn-lg" onclick="startGame()">Start Game</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add shared models before your game scripts -->
+<script src="/shared/models/Player.js"></script>
+<script src="/shared/models/PlayerList.js"></script>
+<script src="/js/controllers/ClientPlayerListController.js"></script>
+<script>
+    const gameShortId = '<%= gameSession.short_id %>';
+    // const playerlist = <%- JSON.stringify(players) %>;
+</script>
+<script src="js/game.js"></script>
+
+<script id="player-list-item" type="text/x-handlebars-template">
+    <%- include('../../shared/views/player-list-item.hbs', {
+        players: players
+    }) %>
+</script>

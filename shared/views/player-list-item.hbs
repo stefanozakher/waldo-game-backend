@@ -1,0 +1,23 @@
+{{#if players.length}}
+    {{#each players}}
+        <li class="list-group-item" data-player-id="{{this.playerId}}">
+            {{this.playerName}}
+            <div class="float-right">
+                {{#if (eq this.playerId ../currentPlayerId)}}
+                    {{#unless (eq this.status 'ready')}}
+                        <button class="btn btn-sm btn-primary mr-2" onclick="clientPlayerList.setPlayerReady(this)">Ready</button>
+                    {{/unless}}
+                {{/if}}
+                <span class="badge {{#if (eq this.status 'connected')}}badge-success
+                                  {{else if (eq this.status 'disconnected')}}badge-danger
+                                  {{else if (eq this.status 'ready')}}badge-primary
+                                  {{else if (eq this.status 'playing')}}badge-info
+                                  {{else}}badge-secondary{{/if}}">
+                    {{default this.status 'unknown'}}
+                </span>
+            </div>
+        </li>
+    {{/each}}
+{{else}}
+    <li class="list-group-item text-muted">No players have joined yet</li>
+{{/if}}

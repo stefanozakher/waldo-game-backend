@@ -1,0 +1,28 @@
+<!-- views/pages/home.ejs -->
+<div class="container mt-5">
+    <h2 class="text-center">Home Page</h2>
+    <p class="text-center">This is the home page of your Node.js application.</p>
+
+    <form id="gameForm" class="mt-4">
+        <div class="form-group">
+            <label for="seconds">Enter seconds:</label>
+            <input type="number" class="form-control" id="seconds" name="seconds" placeholder="Enter seconds" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Create game</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('gameForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const seconds = document.getElementById('seconds').value;
+
+        socket.emit('createGame', { seconds: seconds }, (response) => {
+            if (response.success) {
+                window.location.href = `/${response.gameSession.short_id}`;
+            } else {
+                alert('Failed to create game session');
+            }
+        });
+    });
+</script>
