@@ -4,11 +4,9 @@
             {{this.playerName}}
             <div class="float-right">
                 {{#if (eq this.playerId ../currentPlayerId)}}
-                    <% if (gameSession.status === 'waiting') { %>
-                    {{#unless (or (eq this.status 'ready') (eq this.status 'playing'))}}
-                        <button class="btn btn-sm btn-primary mr-2" onclick="clientPlayerList.setPlayerReady(this)">Ready</button>
-                    {{/unless}}
-                    <% } %>
+                    {{#if (and (eq this.status 'connected') (eq ../gameSession.status 'waiting'))}}
+                        <button class="btn btn-sm btn-primary mr-2" onclick="setPlayerReady(this)">Ready</button>
+                    {{/if}}
                 {{/if}}
                 <span class="badge {{#if (eq this.status 'connected')}}badge-success
                                   {{else if (eq this.status 'disconnected')}}badge-danger

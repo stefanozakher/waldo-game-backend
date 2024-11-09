@@ -3,47 +3,38 @@ class ClientGameSessionController {
         this.socket = socket;
         this.gameShortId = gameShortId;
         this.gameSession = gameSession;
-        
-        this.initializeSocketHandlers();
+
+        this.players = new ClientPlayerListController(socket, this);
     }
 
-    initializeSocketHandlers() {
-        this.socket.on('gameStarted', (data) => { if (data.gameShortId === this.gameShortId) this.startGame(data.started_at); });
-        this.socket.on('gameEnded', (data) => { if (data.gameShortId === this.gameShortId) this.endGame(data.ended_at, false); });
-        //this.socket.on('characterFound', (data) => this.characterFound(data));
+    // Getters
+    getGameSession() {
+        return this.gameSession;
+    }
+    getGameShortId() {
+        return this.gameShortId;
+    }
+    getPlayerListController() {
+        return this.players;
     }
 
+    // Methods
     startGame(started_at) {
         console.log('startGame', this.gameSession.status);
         if (this.gameSession.status === 'waiting') {
             this.gameSession.status = 'playing';
             this.gameSession.started_at = started_at;
-            this.updateGameUI();
-
-            document.getElementById('startGameContainer').style.display = 'none';
-
             this.startTimer();
         }
+        this.updateGameUI();
     }
 
-    endGame(ended_at, emit = true) {
+    endGame(ended_at) {
         console.log('endGame', this.gameSession.status);
         if (this.gameSession.status !== 'completed') {
             this.gameSession.status = 'completed';
             this.gameSession.ended_at = ended_at;
-            this.updateGameUI();
-
-            if (emit) {
-                this.socket.emit('endGame', this.gameShortId, {
-                    ended_at: this.gameSession.ended_at
-                });
-            }
         }
-    }
-
-    characterFound(data) {
-        const { character, foundBy } = data;
-        this.gameSession.foundCharacters.push({ character, foundBy });
         this.updateGameUI();
     }
 
@@ -54,12 +45,10 @@ class ClientGameSessionController {
             statusElement.textContent = this.gameSession.status;
         }
 
-        // Update found characters list
-        const foundList = document.getElementById('foundCharacters');
-        if (foundList) {
-            foundList.innerHTML = this.gameSession.foundCharacters
-                .map(found => `<li>${found.character} found by ${found.foundBy}</li>`)
-                .join('');
+        if (this.gameSession.status !== 'waiting') {
+            document.getElementById('startGameContainer').style.display = 'none';
+        } else {
+            document.getElementById('gameSessionTimer').style.display = 'block';
         }
     }
 
@@ -73,7 +62,7 @@ class ClientGameSessionController {
                 if (elapsed <= 0) {
                     clearInterval(timerInterval);
                     timerElement.textContent = '0:00';
-                    this.endGame(Date.now(), true);
+                    this.endGame(Date.now());
                     return;
                 }
                 

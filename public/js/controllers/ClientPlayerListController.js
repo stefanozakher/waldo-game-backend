@@ -1,11 +1,11 @@
 class ClientPlayerListController {
-    constructor(socket, gameShortId) {
+    constructor(socket, gameSessionController) {
         this.socket = socket;
-        this.gameShortId = gameShortId;
-        this.playerList = new PlayerList(gameShortId);
+        this.gameSessionController = gameSessionController;
+        this.gameShortId = gameSessionController.getGameShortId();
+        this.playerList = new PlayerList(this.gameShortId);
 
-        let _player = this.initializePlayer();
-        this.player = new Player(_player.playerId, _player.playerName);
+        this.player = this.initializePlayer();
         
         this.initializeSocketListeners();
         this.joinGame();
@@ -26,7 +26,7 @@ class ClientPlayerListController {
         } else {
             console.log('Retrieved existing player ID:', waldoPlayer.playerId, 'and name:', waldoPlayer.playerName);
         }
-        return waldoPlayer;
+        return new Player(waldoPlayer.playerId, waldoPlayer.playerName);;
     }
 
     updatePlayerListUI(players) {
@@ -37,7 +37,8 @@ class ClientPlayerListController {
         const template = Handlebars.compile(templateContent);
         playersList.innerHTML = template({
             players: players,
-            currentPlayerId: this.player.playerId
+            currentPlayerId: this.player.playerId,
+            gameSession: this.gameSessionController.getGameSession()
         });
     }
 

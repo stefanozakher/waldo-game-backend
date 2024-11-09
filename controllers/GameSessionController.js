@@ -102,29 +102,24 @@ class GameSessionController {
         }
 
         this.storeGameSession(gameShortId, gameSession);
+
+        this.startGameSessionTimer(gameShortId);
     }
 
     endGame(gameShortId, data) {
         console.log(`Ending game: ${gameShortId}`);
-        console.log('End game data:', data);
 
         const { ended_at } = data;
         const gameSession = gameSessions[gameShortId];
         const playerList = this.players.getPlayerList(gameShortId);
 
-        console.log('Current game session:', gameSession);
-        console.log('Current player list:', playerList ? playerList.getPlayers() : 'No player list found');
-
         if (gameSession && playerList) {
-            console.log('Game conditions met, updating game state');
-            
             gameSession.status = 'completed';
             gameSession.ended_at = ended_at;
             console.log('Updated game session:', gameSession);
             
             // Update all players to completed status
             playerList.getPlayers().forEach(player => {
-                console.log(`Updating player status to completed: ${player.playerId}`);
                 this.players.updatePlayerStatus(gameShortId, player.playerId, 'completed');
             });
             
@@ -146,6 +141,12 @@ class GameSessionController {
         const gameSession = gameSessions[gameShortId];
         console.log('Retrieved game session:', gameSession);
         return gameSession;
+    }
+
+    startGameSessionTimer(gameShortId){
+        setTimeout(() => {
+            this.endGame(gameShortId, { ended_at: Date.now() });
+        }, gameSessions[gameShortId].playtime_in_seconds * 1000 + 1000);
     }
 }
 
