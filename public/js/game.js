@@ -17,6 +17,8 @@ function setPlayerReady(playerId) {
 
 // Handle late joiners
 if (clientGameSession.gameSession.status === 'playing') {
+    clientGameSession.getPlayerListController().setPlayerPlaying();
+    clientGameSession.getPlayerListController().joinGame();
     clientGameSession.updateGameUI();
     clientGameSession.startTimer();
 }

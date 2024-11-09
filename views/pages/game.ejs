@@ -18,7 +18,12 @@
                             <div class="timer-container">
                                 <span class="timer-label">Time:</span>
                                 <span id="gameSessionTimer" class="timer-value">
-                                    <%= Math.floor(gameSession.playtime_in_seconds / 60) %>:<%= (gameSession.playtime_in_seconds % 60).toString().padStart(2, '0') %>
+                                    <% if (gameSession.status === 'playing') { %>
+                                        <% var elapsedSeconds = Math.floor((gameSession.started_at + (gameSession.playtime_in_seconds * 1000) - Date.now()) / 1000) %>
+                                        <%= Math.floor(elapsedSeconds / 60) %>:<%= (elapsedSeconds % 60).toString().padStart(2, '0') %>
+                                    <% } else { %>
+                                        <%= Math.floor(gameSession.playtime_in_seconds / 60) %>:<%= (gameSession.playtime_in_seconds % 60).toString().padStart(2, '0') %>
+                                    <% } %>
                                 </span>
                             </div>
                         <% } %>

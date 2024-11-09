@@ -76,6 +76,9 @@ class ClientPlayerListController {
 
         this.playerList.updatePlayerStatus(this.player.playerId, 'ready');
     }
+    setPlayerPlaying() {
+        this.playerList.updatePlayerStatus(this.player.playerId, 'playing');
+    }
 
     joinGame() {
         this.socket.emit('joinGame', {

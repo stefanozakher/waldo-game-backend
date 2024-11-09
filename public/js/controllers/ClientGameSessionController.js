@@ -44,12 +44,6 @@ class ClientGameSessionController {
         if (statusElement) {
             statusElement.textContent = this.gameSession.status;
         }
-
-        if (this.gameSession.status !== 'waiting') {
-            document.getElementById('startGameContainer').style.display = 'none';
-        } else {
-            document.getElementById('gameSessionTimer').style.display = 'block';
-        }
     }
 
     startTimer() {
