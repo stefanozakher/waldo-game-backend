@@ -31,6 +31,9 @@ io.on('connection', (socket) => {
 
     // Game session events
     socket.on('createGame', (data, callback) => gameSessionController.createGame(data, callback));
+    socket.on('startGame', (gameShortId, data) => gameSessionController.startGame(gameShortId, data));
+    socket.on('endGame', (gameShortId, data) => gameSessionController.endGame(gameShortId, data));
+    // Player events
     socket.on('joinGame', (data) => gameSessionController.players.joinGame(socket, data));
     socket.on('leaveGame', (data) => gameSessionController.players.leaveGame(data));
     socket.on('playerReady', (data) => gameSessionController.players.setPlayerReady(data));

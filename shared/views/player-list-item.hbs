@@ -4,7 +4,7 @@
             {{this.playerName}}
             <div class="float-right">
                 {{#if (eq this.playerId ../currentPlayerId)}}
-                    {{#unless (eq this.status 'ready')}}
+                    {{#unless (or (eq this.status 'ready') (eq this.status 'playing'))}}
                         <button class="btn btn-sm btn-primary mr-2" onclick="clientPlayerList.setPlayerReady(this)">Ready</button>
                     {{/unless}}
                 {{/if}}

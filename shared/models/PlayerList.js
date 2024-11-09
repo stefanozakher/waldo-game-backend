@@ -32,6 +32,10 @@ class PlayerList {
         this.emitUpdate();
     }
 
+    leavePlayer(playerId) {
+        this.updatePlayerStatus(playerId, 'disconnected');
+    }
+
     updatePlayerStatus(playerId, status) {
         const player = this.players.find(p => p.playerId === playerId);
         if (player) {

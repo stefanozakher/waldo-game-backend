@@ -1,6 +1,6 @@
 class ClientPlayerListController {
-    constructor(io, gameShortId) {
-        this.io = io;
+    constructor(socket, gameShortId) {
+        this.socket = socket;
         this.gameShortId = gameShortId;
         this.playerList = new PlayerList(gameShortId);
 
@@ -10,7 +10,7 @@ class ClientPlayerListController {
         this.initializeSocketListeners();
         this.joinGame();
 
-        console.log('Game page initialized for game:', gameShortId, 'with player ID:', this.player.playerId);
+        console.log('ClientPlayerListController initialized for game:', this.gameShortId, 'with player ID:', this.player.playerId);
     }
 
     initializePlayer() {
@@ -50,16 +50,14 @@ class ClientPlayerListController {
     updateStartGameButton() {
         const startGameContainer = document.getElementById('startGameContainer');
         if (this.checkAllPlayersReady()) {
-            console.log('All players ready, showing start button');
             startGameContainer.style.display = 'block';
         } else {
-            console.log('Not all players ready, hiding start button');
             startGameContainer.style.display = 'none';
         }
     }
 
     initializeSocketListeners() {
-        socket.on('syncPlayerList', (playerListData) => {
+        this.socket.on('syncPlayerList', (playerListData) => {
             console.log('Received player list update:', playerListData);
             this.playerList.sync(playerListData.players);
             this.updatePlayerListUI(this.playerList.getPlayers());
@@ -68,27 +66,33 @@ class ClientPlayerListController {
     }
 
     setPlayerReady(button) {
-        console.log('Player ready button clicked');
-        socket.emit('playerReady', {
+        this.socket.emit('playerReady', {
             gameShortId: this.gameShortId,
             playerId: this.player.playerId
         });
         button.disabled = true;
         button.textContent = 'Ready!';
+
+        this.playerList.updatePlayerStatus(this.player.playerId, 'ready');
     }
 
     joinGame() {
-        console.log('Attempting to join game room:', this.gameShortId, 'with player ID:', this.playerId);
-        socket.emit('joinGame', {
+        this.socket.emit('joinGame', {
             gameShortId: this.gameShortId,
             playerId: this.player.playerId,
             playerName: this.player.playerName,
             status: this.player.status
         });
+
+        this.playerList.addPlayer(this.player);
     }
 
     leaveGame() {
-        console.log('Leaving game room:', this.gameShortId, 'with player ID:', this.player.playerId);
-        socket.emit('leaveGame', { gameShortId: this.gameShortId, playerId: this.player.playerId });
+        this.socket.emit('leaveGame', {
+            gameShortId: this.gameShortId,
+            playerId: this.player.playerId
+        });
+
+        this.playerList.leavePlayer(this.player.playerId);
     }
 }

@@ -5,9 +5,11 @@ const gamePlayerLists = require('../store/gamePlayerLists');
 class PlayerListController {
     constructor(io) {
         this.io = io;
+        this.gameShortId = null;
     }
 
     initializeList(gameShortId) {
+        this.gameShortId = gameShortId;
         gamePlayerLists[gameShortId] = new PlayerList(gameShortId);
         
         // Set up listener for PlayerList updates
@@ -42,7 +44,7 @@ class PlayerListController {
         const playerList = gamePlayerLists[gameShortId];
         
         if (playerList) {
-            playerList.removePlayer(playerId);
+            playerList.leavePlayer(playerId);
         }
     }
 
@@ -59,7 +61,7 @@ class PlayerListController {
         Object.values(gamePlayerLists).forEach(playerList => {
             const player = playerList.getPlayers().find(p => p.socketId === socket.id);
             if (player) {
-                playerList.removePlayer(player.playerId);
+                playerList.leavePlayer(player.playerId);
             }
         });
     }

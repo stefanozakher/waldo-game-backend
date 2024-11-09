@@ -20,3 +20,25 @@ footer {
     width: 100%;
     bottom: 0;
 }
+
+.timer-container {
+    display: inline-flex;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.timer-label {
+    font-weight: 500;
+    margin-right: 0.5rem;
+    color: #6c757d;
+}
+
+.timer-value {
+    font-family: 'Roboto Mono', monospace;  /* For better number alignment */
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #212529;
+}
