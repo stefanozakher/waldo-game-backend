@@ -15,6 +15,11 @@ function setPlayerReady(playerId) {
     clientGameSession.getPlayerListController().setPlayerReady(playerId);
 }
 
+function copyGameLinkToClipboard() {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+}
+
 // Handle late joiners
 if (clientGameSession.gameSession.status === 'playing') {
     clientGameSession.getPlayerListController().setPlayerPlaying();

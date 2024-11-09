@@ -1,42 +1,69 @@
 <!-- views/pages/game.ejs -->
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header">
-                    <h2>Game Session: <%= gameSession.short_id %></h2>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="game-status">
-                            Status: <span id="gameStatus" class="badge 
+<div class="d-flex flex-column vh-100">
+    <!-- Top Bar -->
+    <div class="container-fluid p-3">
+        <div class="row">
+            <div class="col text-left">
+                <p>Game Session: <%= gameSession.short_id %>
+                    <span id="gameStatus" class="badge 
                                 <%= gameSession.status === 'waiting' ? 'badge-secondary' :
                                     gameSession.status === 'playing' ? 'badge-primary' :
                                     gameSession.status === 'completed' ? 'badge-success' : 'badge-info' %>">
-                                <%= gameSession.status.charAt(0).toUpperCase() + gameSession.status.slice(1) %>
-                            </span>
-                        </div>
-                        <% if (gameSession.status !== 'completed') { %>
-                            <div class="timer-container">
-                                <span class="timer-label">Time:</span>
-                                <span id="gameSessionTimer" class="timer-value">
-                                    <% if (gameSession.status === 'playing') { %>
-                                        <% var elapsedSeconds = Math.floor((gameSession.started_at + (gameSession.playtime_in_seconds * 1000) - Date.now()) / 1000) %>
-                                        <%= Math.floor(elapsedSeconds / 60) %>:<%= (elapsedSeconds % 60).toString().padStart(2, '0') %>
-                                    <% } else { %>
-                                        <%= Math.floor(gameSession.playtime_in_seconds / 60) %>:<%= (gameSession.playtime_in_seconds % 60).toString().padStart(2, '0') %>
-                                    <% } %>
-                                </span>
-                            </div>
+                        <%= gameSession.status.charAt(0).toUpperCase() + gameSession.status.slice(1) %>
+                    </span>
+                </p>
+            </div>
+            <div class="col text-center">
+                <% if (gameSession.status !=='completed' ) { %>
+                <p>Time left:
+                    <span id="gameSessionTimer" class="timer-value">
+                        <% if (gameSession.status==='playing' ) { %>
+                            <% var elapsedSeconds=Math.floor((gameSession.started_at + (gameSession.playtime_in_seconds * 1000) - Date.now()) / 1000) %>
+                            <%= Math.floor(elapsedSeconds / 60) %>:<%= (elapsedSeconds % 60).toString().padStart(2, '0' ) %>
+                        <% } else { %>
+                            <%= Math.floor(gameSession.playtime_in_seconds / 60) %>:<%= (gameSession.playtime_in_seconds % 60).toString().padStart(2, '0' ) %>
                         <% } %>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <h3>Players</h3>
-                    <ul class="list-group" id="playersList">
-                    </ul>
+                    </span>
+                </p>
+                <% } %>
+            </div>
+            <div class="col text-right">
+             <!-- Button to copy the current URL into the clipboard -->
+                <button class="btn btn-primary" onclick="copyGameLinkToClipboard()">Share Link</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid flex-grow-1">
+        <div class="row h-100">
+            <!-- Player List -->
+            <div class="col-md-3 bg-light p-3 border-end">
+                <h4 class="mb-3">Players</h4>
+                <ul class="list-group" id="playersList">
+                </ul>
+            </div>
+
+            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                <div class="bg-secondary text-white p-5 rounded">
+                    <h2 class="text-center mb-4">Game Board</h2>
                     <!-- Add this new div for the start button -->
-                    <div id="startGameContainer" class="text-center mt-3" style="display: none;">
+                <div id="startGameContainer" class="text-center mt-3" style="display: none;">
                         <button class="btn btn-success btn-lg" onclick="startGame()">Start Game</button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Chat -->
+            <div class="col-md-3 bg-light p-3 border-start d-flex flex-column">
+                <h4 class="mb-3">Chat</h4>
+                <div class="flex-grow-1 mb-3 border rounded p-2 chat-container">
+                    <p><strong>Player 1:</strong> Hello everyone!</p>
+                    <p><strong>Player 2:</strong> Hi there!</p>
+                    <p><strong>Player 3:</strong> Let's start the game!</p>
+                </div>
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Type your message...">
+                    <button class="btn btn-primary" type="button">Send</button>
                 </div>
             </div>
         </div>
