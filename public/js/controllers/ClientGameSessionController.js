@@ -10,7 +10,7 @@ class ClientGameSessionController {
     initializeSocketHandlers() {
         this.socket.on('gameStarted', (data) => { if (data.gameShortId === this.gameShortId) this.startGame(data.started_at); });
         this.socket.on('gameEnded', (data) => { if (data.gameShortId === this.gameShortId) this.endGame(data.ended_at, false); });
-        this.socket.on('characterFound', (data) => this.characterFound(data));
+        //this.socket.on('characterFound', (data) => this.characterFound(data));
     }
 
     startGame(started_at) {
