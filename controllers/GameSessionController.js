@@ -1,4 +1,5 @@
 const GameSession = require('../models/GameSession');
+const Chat = require('../shared/models/Chat');
 const PlayerListController = require('./PlayerListController');
 const gameSessions = require('../store/gameSessions');
 
@@ -9,59 +10,36 @@ class GameSessionController {
         this.players = new PlayerListController(socket);
     }
 
+    // Getter
+    getGameSession(gameShortId) {
+        return gameSessions[gameShortId];
+    }
+
     storeGameSession(gameShortId, gameSession) {
-        console.log(`Storing game session - ID: ${gameShortId}`);
-        console.log('Game session data:', gameSession);
         gameSessions[gameShortId] = gameSession;
-        console.log('Current active game sessions:', Object.keys(gameSessions));
     }
 
     createGame(data, callback) {
-        console.log('Creating new game session');
-        console.log('Received data:', data);
+        console.log('Creating new game session', data);
 
         // Create a new game session
         const gameSession = new GameSession(data.seconds);
         console.log('New game session created:', gameSession);
 
-        this.storeGameSession(gameSession.short_id, gameSession);
-        console.log(`Game session stored with ID: ${gameSession.short_id}`);
-
         // Initialize player list for this game session
         this.players.initializeList(gameSession.short_id);
         console.log(`Player list initialized for game: ${gameSession.short_id}`);
 
+        // Initialize chat for this game session
+        gameSession.chat = new Chat(gameSession.short_id);
+        console.log(`Chat initialized for game: ${gameSession.short_id}`);
+
+        this.storeGameSession(gameSession.short_id, gameSession);
+        console.log(`Game session stored with ID: ${gameSession.short_id}`);
+
         // Send response back to client
         console.log('Sending response to client:', { success: true, gameSession: gameSession });
         callback({ success: true, gameSession: gameSession });
-    }
-
-    checkGameStart(gameShortId) {
-        console.log(`Checking game start conditions for game: ${gameShortId}`);
-        
-        const playerList = this.players.getPlayerList(gameShortId);
-        const gameSession = gameSessions[gameShortId];
-
-        console.log('Current player list:', playerList ? playerList.getPlayers() : 'No player list found');
-        console.log('Current game session:', gameSession);
-
-        if (playerList && gameSession) {
-            const allPlayers = playerList.getPlayers();
-            const allReady = allPlayers.length > 0 && 
-                            allPlayers.every(player => player.status === 'ready');
-
-            console.log('All players:', allPlayers);
-            console.log('All players ready:', allReady);
-
-            if (allReady) {
-                console.log('All players ready, starting game');
-                this.startGame(gameShortId);
-            } else {
-                console.log('Not all players are ready yet');
-            }
-        } else {
-            console.log('Missing player list or game session');
-        }
     }
 
     startGame(gameShortId, data) {
@@ -88,22 +66,17 @@ class GameSessionController {
                 this.players.updatePlayerStatus(gameShortId, player.playerId, 'playing');
             });
 
-            console.log('Emitting gameStarted event to room:', gameShortId);
-            this.socket.to(gameShortId).emit('gameStarted', {
-                gameShortId: gameShortId,
-                started_at: gameSession.started_at,
-                players: playerList.getPlayers()
-            });
+            this.storeGameSession(gameShortId, gameSession);
+            this.startGameSessionTimer(gameShortId);
+
+            return true;
         } else {
             console.log('Failed to start game - conditions not met');
             console.log('Game session exists:', !!gameSession);
             console.log('Player list exists:', !!playerList);
             console.log('Game status is waiting:', gameSession?.status === 'waiting');
         }
-
-        this.storeGameSession(gameShortId, gameSession);
-
-        this.startGameSessionTimer(gameShortId);
+        return false;
     }
 
     endGame(gameShortId, data) {
@@ -113,7 +86,7 @@ class GameSessionController {
         const gameSession = gameSessions[gameShortId];
         const playerList = this.players.getPlayerList(gameShortId);
 
-        if (gameSession && playerList) {
+        if (gameSession && playerList && gameSession.status !== 'completed') {
             gameSession.status = 'completed';
             gameSession.ended_at = ended_at;
             console.log('Updated game session:', gameSession);
@@ -123,24 +96,14 @@ class GameSessionController {
                 this.players.updatePlayerStatus(gameShortId, player.playerId, 'completed');
             });
             
-            console.log('Emitting gameEnded event to room:', gameShortId);
-            this.socket.to(gameShortId).emit('gameEnded', {
-                gameShortId: gameShortId,
-                ended_at: gameSession.ended_at,
-                players: playerList.getPlayers()
-            });
+            this.storeGameSession(gameShortId, gameSession);
+
+            return true;
         } else {
             console.log('Failed to end game - missing game session or player list');
         }
 
-        this.storeGameSession(gameShortId, gameSession);
-    }
-
-    getGameSession(gameShortId) {
-        console.log(`Getting game session: ${gameShortId}`);
-        const gameSession = gameSessions[gameShortId];
-        console.log('Retrieved game session:', gameSession);
-        return gameSession;
+        return false;
     }
 
     startGameSessionTimer(gameShortId){

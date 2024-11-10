@@ -37,7 +37,7 @@
     <div class="container-fluid flex-grow-1">
         <div class="row h-100">
             <!-- Player List -->
-            <div class="col-md-3 bg-light p-3 border-end">
+            <div class="col-md-3 border-end">
                 <h4 class="mb-3">Players</h4>
                 <ul class="list-group" id="playersList">
                 </ul>
@@ -47,24 +47,15 @@
                 <div class="bg-secondary text-white p-5 rounded">
                     <h2 class="text-center mb-4">Game Board</h2>
                     <!-- Add this new div for the start button -->
-                <div id="startGameContainer" class="text-center mt-3" style="display: none;">
+                    <div id="startGameContainer" class="text-center mt-3" style="display: none;">
                         <button class="btn btn-success btn-lg" onclick="startGame()">Start Game</button>
                     </div>
                 </div>
             </div>
 
             <!-- Chat -->
-            <div class="col-md-3 bg-light p-3 border-start d-flex flex-column">
-                <h4 class="mb-3">Chat</h4>
-                <div class="flex-grow-1 mb-3 border rounded p-2 chat-container">
-                    <p><strong>Player 1:</strong> Hello everyone!</p>
-                    <p><strong>Player 2:</strong> Hi there!</p>
-                    <p><strong>Player 3:</strong> Let's start the game!</p>
-                </div>
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Type your message...">
-                    <button class="btn btn-primary" type="button">Send</button>
-                </div>
+            <div class="col-md-3 d-flex flex-column">
+                <%- include('gameChat.ejs') %>
             </div>
         </div>
     </div>
@@ -73,8 +64,11 @@
 <!-- Add shared models before your game scripts -->
 <script src="/shared/models/Player.js"></script>
 <script src="/shared/models/PlayerList.js"></script>
+<script src="/shared/models/Message.js"></script>
+<script src="/shared/models/Chat.js"></script>
 <script src="/js/controllers/ClientPlayerListController.js"></script>
 <script src="/js/controllers/ClientGameSessionController.js"></script>
+<script src="/js/controllers/ClientChatController.js"></script>
 <script>
     const gameShortId = '<%= gameSession.short_id %>';
     const gameSession = <%- JSON.stringify(gameSession) %>;

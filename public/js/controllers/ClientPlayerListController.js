@@ -9,8 +9,11 @@ class ClientPlayerListController {
         
         this.initializeSocketListeners();
         this.joinGame();
+    }
 
-        console.log('ClientPlayerListController initialized for game:', this.gameShortId, 'with player ID:', this.player.playerId);
+    // Getters
+    getPlayer() {
+        return this.player;
     }
 
     initializePlayer() {

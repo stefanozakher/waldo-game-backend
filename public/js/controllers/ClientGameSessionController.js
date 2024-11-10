@@ -5,6 +5,7 @@ class ClientGameSessionController {
         this.gameSession = gameSession;
 
         this.players = new ClientPlayerListController(socket, this);
+        this.chat = new ClientChatController(socket, this);
     }
 
     // Getters
@@ -16,6 +17,9 @@ class ClientGameSessionController {
     }
     getPlayerListController() {
         return this.players;
+    }
+    getChatController() {
+        return this.chat;
     }
 
     // Methods

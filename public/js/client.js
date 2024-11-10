@@ -20,3 +20,6 @@ Handlebars.registerHelper('and', function() {
 Handlebars.registerHelper('default', function(value, defaultValue) {
     return value || defaultValue;
 });
+  Handlebars.registerHelper('formatTime', function(timestamp) {
+    return new Date(timestamp).toLocaleTimeString();
+});

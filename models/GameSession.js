@@ -7,6 +7,7 @@ class GameSession {
         this.status = 'waiting';
         this.started_at = null;
         this.ended_at = null;
+        this.chat = null;
     }
 }
 
