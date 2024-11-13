@@ -6,21 +6,26 @@ socket.on('gameStarted', (data) => { if (data.gameShortId === gameShortId) clien
 socket.on('gameEnded', (data) => { if (data.gameShortId === gameShortId) clientGameSession.endGame(data.ended_at); });
 
 // Chat
-socket.on('chatMessage', (data) => { console.log('Received chat message:', data); clientGameSession.getChatController().addMessage(data); });
+socket.on('chatMessage', (data) => { console.log('Received chat message:', data); clientGameSession.getChat().addMessage(data); });
 
-socket.emit('loadChatMessages', gameShortId, (messages) => {
-    console.log('Received chat messages:', messages);
-    clientGameSession.chat.loadMessages(messages);
+socket.on('syncPlayerList', (players) => {
+    console.log('Received player list update:', players);
+    clientGameSession.getPlayerList().sync(players);
+    clientGameSession.updatePlayerlistUI();
 });
 
 function startGame() {
-    let startTime = Date.now();
-    socket.emit('startGame', gameShortId, { started_at: startTime });
-    clientGameSession.startGame(startTime);
+    let gameSession = clientGameSession.startGame(Date.now());
+    if (gameSession) socket.emit('startGame', gameShortId, { started_at: gameSession.started_at });
 }
 
-function setPlayerReady(playerId) {
-    clientGameSession.getPlayerListController().setPlayerReady(playerId);
+function setPlayerReady(button) {
+    clientGameSession.setPlayerReady(button);
+
+    button.disabled = true;
+    button.textContent = 'Ready!';
+
+    socket.emit('playerReady', gameShortId, clientGameSession.getPlayer().playerId );
 }
 
 function copyGameLinkToClipboard() {
@@ -28,18 +33,27 @@ function copyGameLinkToClipboard() {
     navigator.clipboard.writeText(url);
 }
 
+socket.emit('joinGame', gameShortId, clientGameSession.getPlayer().toJSON());
+
+socket.emit('loadChatMessages', gameShortId, (messages) => {
+    console.log('Received chat messages:', messages);
+    clientGameSession.getChat().loadMessages(messages);
+});
+
 // Handle late joiners
-if (clientGameSession.gameSession.status === 'playing') {
-    clientGameSession.getPlayerListController().setPlayerPlaying();
-    clientGameSession.getPlayerListController().joinGame();
+if (clientGameSession.getSession().status === 'playing') {
+    clientGameSession.setPlayerPlaying();
+    clientGameSession.joinGame();
     clientGameSession.updateGameUI();
     clientGameSession.startTimer();
+
+    socket.emit('playerStatus', gameShortId, clientGameSession.getPlayer().playerId, 'playing' );
 }
 
-window.addEventListener('beforeunload', () => {
-    clientGameSession.getPlayerListController().leaveGame();
-    socket.disconnect();
-});
+// window.addEventListener('beforeunload', () => {
+//     clientGameSession.getPlayerList().leaveGame();
+//     socket.disconnect();
+// });
 
 // document.addEventListener('visibilitychange', () => {
 //     if (document.hidden) {

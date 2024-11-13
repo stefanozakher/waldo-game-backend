@@ -38,9 +38,7 @@
         <div class="row h-100">
             <!-- Player List -->
             <div class="col-md-3 border-end">
-                <h4 class="mb-3">Players</h4>
-                <ul class="list-group" id="playersList">
-                </ul>
+                <%- include('gamePlayerlist.ejs') %>
             </div>
 
             <div class="col-md-6 d-flex align-items-center justify-content-center">
@@ -66,7 +64,6 @@
 <script src="/shared/models/PlayerList.js"></script>
 <script src="/shared/models/Message.js"></script>
 <script src="/shared/models/Chat.js"></script>
-<script src="/js/controllers/ClientPlayerListController.js"></script>
 <script src="/js/controllers/ClientGameSessionController.js"></script>
 <script src="/js/controllers/ClientChatController.js"></script>
 <script>

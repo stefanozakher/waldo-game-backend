@@ -14,7 +14,7 @@ class PlayerList {
     addPlayer(playerData) {
         const player = playerData instanceof Player ? 
             playerData : 
-            new Player(playerData.playerId, playerData.playerName, playerData.status, playerData.socketId);
+            new Player(playerData.playerId, playerData.playerName, playerData.status);
 
         const existingIndex = this.players.findIndex(p => p.playerId === player.playerId);
         if (existingIndex !== -1) {
@@ -42,6 +42,12 @@ class PlayerList {
             player.status = status;
             this.emitUpdate();
         }
+    }
+    updateAllPlayersStatus(status) {
+        this.players.forEach(player => {
+            player.status = status;
+        });
+        this.emitUpdate();
     }
 
     getPlayers() {

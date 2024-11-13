@@ -39,8 +39,8 @@ class ClientChatController {
         console.log('Attempting to send message:', message);
 
         if (message) {
-            let playerId = this.gameSessionController.players.getPlayer().playerId;
-            let playerName = this.gameSessionController.players.getPlayer().playerName;
+            let playerId = this.gameSessionController.getPlayer().playerId;
+            let playerName = this.gameSessionController.getPlayer().playerName;
 
             socket.emit('chatMessage', this.gameShortId, (new Message(playerId, playerName, message)).toJSON() );
             this.messageInput.value = '';
@@ -63,7 +63,7 @@ class ClientChatController {
             
             this.chatContainer.innerHTML += template({
                 ...message,
-                currentPlayerId: this.gameSessionController.players.getPlayer().playerId
+                currentPlayerId: this.gameSessionController.getPlayer().playerId
             });
             
             // Auto scroll to bottom

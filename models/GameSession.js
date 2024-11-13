@@ -8,6 +8,7 @@ class GameSession {
         this.started_at = null;
         this.ended_at = null;
         this.chat = null;
+        this.playerlist = null;
     }
 }
 

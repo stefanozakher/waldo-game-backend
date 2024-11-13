@@ -3,15 +3,13 @@ class Player {
         this.playerId = playerId;
         this.playerName = playerName;
         this.status = status;
-        this.socketId = socketId;
     }
 
     toJSON() {
         return {
             playerId: this.playerId,
             playerName: this.playerName,
-            status: this.status,
-            socketId: this.socketId
+            status: this.status
         };
     }
 }
@@ -21,4 +19,4 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = Player;
 } else {
     window.Player = Player;
-} 
+}

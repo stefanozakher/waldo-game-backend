@@ -1,0 +1,11 @@
+<h4 class="mb-3">Players</h4>
+<ul class="list-group" id="playerlist">
+</ul>
+
+<script id="player-list-item" type="text/x-handlebars-template">
+    <%- include('../../shared/views/player-list-item.hbs', {
+        gameShortId: gameShortId,
+        gameSession: gameSession,
+        players: players
+    }) %>
+</script>
