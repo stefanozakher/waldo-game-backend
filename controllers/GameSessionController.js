@@ -34,7 +34,7 @@ class GameSessionController {
         console.log('Creating new game session', data);
 
         // Create a new game session
-        const gameSession = new GameSession(data.seconds);
+        const gameSession = new GameSession(data.seconds, data.levels);
         console.log('New game session created:', gameSession);
 
         gameSession.playerlist = new PlayerList(gameSession.short_id);

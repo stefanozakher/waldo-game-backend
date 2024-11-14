@@ -1,4 +1,5 @@
 const express = require('express');
+const gameLevels = require('../store/gameLevels');
 
 function createRouter(gameSessionController) {
     const router = express.Router();
@@ -6,7 +7,8 @@ function createRouter(gameSessionController) {
     router.get('/', (req, res) => {
         res.render('index', { 
             title: 'Home',
-            page: 'pages/home'
+            page: 'pages/home',
+            gameLevels: gameLevels
         });
     });
 
