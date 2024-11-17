@@ -1,6 +1,12 @@
-<h4 class="mb-3">Players</h4>
-<ul class="list-group" id="playerlist">
-</ul>
+<div class="card h-100">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Players</h5>
+    </div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush" id="playerlist">
+        </ul>
+    </div>
+</div>
 
 <script id="player-list-item" type="text/x-handlebars-template">
     <%- include('../../shared/views/player-list-item.hbs', {

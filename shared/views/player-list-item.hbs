@@ -1,18 +1,22 @@
 {{#if players.length}}
     {{#each players}}
-        <li class="list-group-item" data-player-id="{{this.playerId}}">
-            {{this.playerName}}
+        <li class="list-group-item d-flex justify-content-between align-items-center" data-player-id="{{this.playerId}}">
+            <div class="d-flex align-items-center">
+                <img src="https://api.dicebear.com/6.x/avataaars/svg?seed={{this.playerName}}" alt="Player 1" class="rounded-circle me-2" width="32" height="32">
+                {{this.playerName}}
+            </div>
+            
             <div class="float-right">
                 {{#if (eq this.playerId ../currentPlayerId)}}
                     {{#if (and (eq this.status 'connected') (eq ../gameSession.status 'waiting'))}}
                         <button class="btn btn-sm btn-primary mr-2" onclick="setPlayerReady(this)">Ready</button>
                     {{/if}}
                 {{/if}}
-                <span class="badge {{#if (eq this.status 'connected')}}badge-success
-                                  {{else if (eq this.status 'disconnected')}}badge-danger
-                                  {{else if (eq this.status 'ready')}}badge-primary
-                                  {{else if (eq this.status 'playing')}}badge-info
-                                  {{else}}badge-secondary{{/if}}">
+                <span class="badge {{#if (eq this.status 'connected')}}bg-success
+                                  {{else if (eq this.status 'disconnected')}}bg-danger
+                                  {{else if (eq this.status 'ready')}}bg-primary
+                                  {{else if (eq this.status 'playing')}}bg-info
+                                  {{else}}bg-secondary{{/if}}">
                     {{default this.status 'unknown'}}
                 </span>
             </div>

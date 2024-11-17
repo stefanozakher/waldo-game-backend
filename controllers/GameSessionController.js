@@ -111,11 +111,15 @@ class GameSessionController {
     // Player events
     joinGame(gameShortId, data) {
         const { playerId, playerName, status } = data;
+        const playerList = this.getPlayerList(gameShortId);
         console.log(`Join game request received for game: ${gameShortId} from player: ${playerId}`);
 
-        this.getPlayerList(gameShortId).addPlayer(data);
+        if (playerList) {
+            playerList.addPlayer(data);
+            return true;
+        }
 
-        return true;
+        return null;
     }
     leaveGame(gameShortId, playerId) {
         this.getPlayerList(gameShortId).leavePlayer(playerId);

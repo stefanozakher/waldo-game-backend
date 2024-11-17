@@ -1,16 +1,9 @@
-
-{{#if (eq playerId currentPlayerId)}}
-<!-- Message from player: {{playerName}} {{playerId}} -->
-<!-- Current player ID: {{currentPlayerId}} -->
-<div class="d-flex justify-content-end mb-3">
-    <div class="bg-primary text-white p-2 rounded-3 mw-75">
-        <!-- <div class="fw-bold text-white mb-1">You</div> -->
-{{else}}
-<div class="d-flex mb-3"></div>
-    <div class="bg-light p-2 rounded-3 mw-75">
-        <div class="fw-bold text-primary mb-1">{{playerName}}</div>
-{{/if}}
-        <div>{{message}}</div>
-        <!-- <div class="text-muted small">{{formatTime timestamp}}</div> -->
-    </div>
+<div class="mb-1">
+    {{#if (eq playerId currentPlayerId)}}
+    <span class="fw-bold">You</span>
+    {{else}}
+    <span class="fw-bold">{{playerName}}</span>
+    {{/if}}
+    <span class="text-muted">[{{formatTime timestamp}}]:</span>
+    {{message}}
 </div>
