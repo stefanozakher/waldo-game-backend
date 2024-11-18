@@ -1,6 +1,7 @@
 if (!socket) { const socket = io(); }
 
 const clientGameSession = new ClientGameSessionController(socket, gameShortId, gameSession);
+const clientGameLevels = new ClientGameLevelsController(gameShortId, gameSession);
 
 socket.on('gameStarted', (data) => { if (data.gameShortId === gameShortId) clientGameSession.startGame(data.started_at); });
 socket.on('gameEnded', (data) => { if (data.gameShortId === gameShortId) clientGameSession.endGame(data.ended_at); });
@@ -16,7 +17,10 @@ socket.on('syncPlayerList', (players) => {
 
 function startGame() {
     let gameSession = clientGameSession.startGame(Date.now());
-    if (gameSession) socket.emit('startGame', gameShortId, { started_at: gameSession.started_at });
+    if (gameSession) {
+        socket.emit('startGame', gameShortId, { started_at: gameSession.started_at });
+        clientGameLevels.loadNextLevel();
+    }
 }
 
 function setPlayerReady(button) {

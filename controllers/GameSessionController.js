@@ -2,6 +2,7 @@ const Chat = require('../shared/models/Chat');
 const PlayerList = require('../shared/models/PlayerList');
 const GameSession = require('../models/GameSession');
 const gameSessions = require('../store/gameSessions');
+const gameLevels = require('../store/gameLevels');
 
 class GameSessionController {
     constructor() {
@@ -34,10 +35,19 @@ class GameSessionController {
         console.log('Creating new game session', data);
 
         // Create a new game session
-        const gameSession = new GameSession(data.seconds, data.levels);
+        const gameSession = new GameSession(data.seconds);
         console.log('New game session created:', gameSession);
 
         gameSession.playerlist = new PlayerList(gameSession.short_id);
+
+        if (data.levelsIds) {
+            gameSession.levelsIds = data.levelsIds;
+            gameSession.levels = gameLevels.filter(level => data.levelsIds.includes(level.id));
+        } else {
+            // Otherwise choose all levels
+            gameSession.levelsIds = gameLevels.map(level => level.id);
+            gameSession.levels = gameLevels;
+        }
 
         // Initialize player list for this game session
         //this.players.initializeList(gameSession.short_id);

@@ -1,7 +1,7 @@
 const shortid = require('shortid');
 
 class GameSession {
-    constructor(playtime_in_seconds, levels = null) {
+    constructor(playtime_in_seconds) {
         this.short_id = shortid.generate();
         this.playtime_in_seconds = playtime_in_seconds;
         this.status = 'waiting';
@@ -9,7 +9,8 @@ class GameSession {
         this.ended_at = null;
         this.chat = null;
         this.playerlist = null;
-        this.levels = levels;
+        this.levels = [];
+        this.levelsIds = [];
     }
 }
 

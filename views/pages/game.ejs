@@ -15,6 +15,17 @@
                     <h5 class="card-title mb-0">Game Board</h5>
                 </div>
                 <div class="card-body d-flex align-items-center justify-content-center" style="display: none;">
+                    <% if (gameSession.status === 'playing') { %>
+                    <div id="gameBoard">
+                        <% if (gameSession.levels.length > 0) { %>
+                            <img src="<%= gameSession.levels[0].imageUrl %>" alt="Game Level Image" class="img-fluid" />
+                        <% } else { %>
+                            <p>No levels available.</p>
+                        <% } %>
+                    </div>
+                    <% } else { %>
+                    <div id="gameBoard"></div>
+                    <% } %>
                     <div id="startGameContainer" class="text-center">
                         <button class="btn btn-success btn-lg" onclick="startGame()">Start Game</button>
                     </div>
@@ -34,6 +45,7 @@
 <script src="/shared/models/Message.js"></script>
 <script src="/shared/models/Chat.js"></script>
 <script src="/js/controllers/ClientGameSessionController.js"></script>
+<script src="/js/controllers/ClientGameLevelsController.js"></script>
 <script src="/js/controllers/ClientChatController.js"></script>
 <script>
     const gameShortId = '<%= gameSession.short_id %>';
@@ -43,6 +55,13 @@
 
 <script id="player-list-item" type="text/x-handlebars-template">
     <%- include('../../shared/views/player-list-item.hbs', {
+        gameShortId: gameShortId,
+        gameSession: gameSession,
+        players: players
+    }) %>
+</script>
+<script id="level-template" type="text/x-handlebars-template">
+    <%- include('../../shared/views/level.hbs', {
         gameShortId: gameShortId,
         gameSession: gameSession,
         players: players

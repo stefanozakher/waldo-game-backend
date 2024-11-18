@@ -45,28 +45,4 @@
   </form>
 </div>
 
-<script>
-  const getSelectedLevels = () => {
-      const selectedLevels = [];
-      const checkboxes = document.querySelectorAll('input[name="selectedLevels[]"]:checked');
-
-      checkboxes.forEach(checkbox => {
-        selectedLevels.push(checkbox.value);
-      });
-
-      return selectedLevels;
-    };
-  document.getElementById('gameForm').addEventListener('submit', function (event) {
-    event.preventDefault();
-    const seconds = document.getElementById('seconds').value;
-    const selectedLevels = getSelectedLevels();
-
-    socket.emit('createGame', { seconds: seconds, levels: selectedLevels }, (response) => {
-      if (response.success) {
-        window.location.href = `/${response.gameSession.short_id}`;
-      } else {
-        alert('Failed to create game session');
-      }
-    });
-  });
-</script>
+<script src="js/home.js"></script>
