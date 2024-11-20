@@ -33,3 +33,9 @@ body {
     line-height: 1.2;
     max-height: 1200px;
 }
+
+#gameBoard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
