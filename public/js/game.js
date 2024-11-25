@@ -19,7 +19,7 @@ function startGame() {
     let gameSession = clientGameSession.startGame(Date.now());
     if (gameSession) {
         socket.emit('startGame', gameShortId, { started_at: gameSession.started_at });
-        clientGameLevels.loadNextLevel();
+        clientGameLevels.loadCurrentLevel();
     }
 }
 
@@ -52,6 +52,8 @@ if (clientGameSession.getSession().status === 'playing') {
     clientGameSession.startTimer();
 
     socket.emit('playerStatus', gameShortId, clientGameSession.getPlayer().playerId, 'playing' );
+
+    clientGameLevels.loadCurrentLevel();
 }
 
 // window.addEventListener('beforeunload', () => {

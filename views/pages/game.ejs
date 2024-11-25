@@ -15,15 +15,17 @@
                     <h5 class="card-title mb-0">Game Board</h5>
                 </div>
                 <div class="card-body d-flex align-items-center justify-content-center" style="display: none;">
-                    <div id="gameBoard">
-                        <% if (gameSession.status==='playing' && gameSession.levels.length> 0) { %>
-                            <img id="gameBoard-image" src="<%= gameSession.levels[0].imageUrl %>" alt="Game Level Image" class="img-fluid" />
-                        <% } else { %>
-                            <p>No levels available.</p>
-                        <% } %>
-                    </div>
-                    <div id="startGameContainer" class="text-center">
-                        <button class="btn btn-success btn-lg" onclick="startGame()">Start Game</button>
+                    <div class="ratio ratio-4x3 rounded bg-secondary overflow-hidden">
+                        <div id="gameBoard">
+                            <% if (gameSession.status==='playing' && gameSession.levels.length> 0) { %>
+                                <img id="gameBoard-image" src="<%= gameSession.levels[0].imageUrl %>" alt="Game Level Image" class="img-fluid" />
+                            <% } else { %>
+                                <p>No levels available.</p>
+                            <% } %>
+                        </div>
+                        <div id="startGameContainer" class="text-center">
+                            <button class="btn btn-success btn-lg" onclick="startGame()">Start Game</button>
+                        </div>
                     </div>
                 </div>
             </div>

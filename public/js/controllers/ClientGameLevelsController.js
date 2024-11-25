@@ -1,6 +1,7 @@
 class ClientGameLevelsController {
     constructor(gameShortId, gameSession) {
         this.gameShortId = gameShortId;
+        this.gameBoardZoom = null;
         this.levels = gameSession.levels; // Array of game levels
         this.currentLevelIndex = 0; // Track the current level
 
@@ -8,17 +9,21 @@ class ClientGameLevelsController {
     }
 
     initializeElements() {
-        this.gameBoard = document.getElementById('gameBoard');
+        document.addEventListener('DOMContentLoaded', () => {
+            // Your code here
+            this.gameBoard = document.getElementById('gameBoard');
+        });
+        
         
         if (!this.gameBoard) {
             console.error('Failed to find game elements:', {
                 container: !!this.gameBoard
             });
         } else {
-            this.gameBoard.addEventListener('click', () => {
+            /*this.gameBoard.addEventListener('click', () => {
                 console.log('Send button clicked');
                 this.loadNextLevel();
-            });
+            });*/
         }
     }
 
@@ -26,6 +31,22 @@ class ClientGameLevelsController {
         const level = this.levels[this.currentLevelIndex];
         console.log('Loading level:', level);
         this.updateLevelUI(level);
+
+        var frame = document.getElementById('gameBoard');
+
+        this.gameBoardZoom = WZoom.create('#gameBoard-image',{
+            maxScale: 4,
+            onGrab: function () {
+                frame.style.cursor = 'grabbing';
+            },
+            onDrop: function () {
+                frame.style.cursor = 'grab';
+            }
+        });
+
+        window.addEventListener('resize', function () {
+            if (this.gameBoardZoom) this.gameBoardZoom.prepare();
+        });
     }
 
     loadNextLevel() {
