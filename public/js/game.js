@@ -44,17 +44,21 @@ socket.emit('loadChatMessages', gameShortId, (messages) => {
     clientGameSession.getChat().loadMessages(messages);
 });
 
-// Handle late joiners
-if (clientGameSession.getSession().status === 'playing') {
-    clientGameSession.setPlayerPlaying();
-    clientGameSession.joinGame();
-    clientGameSession.updateGameUI();
-    clientGameSession.startTimer();
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle late joiners
+    if (clientGameSession.getSession().status === 'playing') {
+        clientGameSession.setPlayerPlaying();
+        clientGameSession.joinGame();
+        clientGameSession.updateGameUI();
+        clientGameSession.startTimer();
 
-    socket.emit('playerStatus', gameShortId, clientGameSession.getPlayer().playerId, 'playing' );
+        // Send player status to server
+        socket.emit('playerStatus', gameShortId, clientGameSession.getPlayer().playerId, 'playing' );
 
-    clientGameLevels.loadCurrentLevel();
-}
+        // Load current level
+        clientGameLevels.loadCurrentLevel();
+    }
+});
 
 // window.addEventListener('beforeunload', () => {
 //     clientGameSession.getPlayerList().leaveGame();

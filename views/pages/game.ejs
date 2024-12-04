@@ -3,13 +3,22 @@
     <!-- ########################## HEADER ########################## -->
     <%- include('gameHeader.ejs',{gameSession:gameSession}) %>
 
-    <div class="row g-4">
-        <!-- ########################## PLAYER LIST ########################## -->
-        <div class="col-md-3">
-            <%- include('gamePlayerlist.ejs') %>
+    <!-- Add player avatars strip here -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body py-2">
+                    <div class="d-flex gap-2 overflow-auto">
+                        <%- include('gamePlayerlist.ejs') %>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <div class="row g-4">
         <!-- ########################## GAME BOARD ########################## -->
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="card h-100">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Game Board</h5>
@@ -31,7 +40,7 @@
             </div>
         </div>
         <!-- ########################## CHAT ########################## -->
-        <div class="col-md-3">
+        <div class="col-md-4">
             <%- include('gameChat.ejs') %>
         </div>
     </div>
