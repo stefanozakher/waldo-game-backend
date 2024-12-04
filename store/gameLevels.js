@@ -85,10 +85,10 @@ const gameLevels = [
         imageWidth: 1500,
         imageHeight: 725,
         targetArea: {
-            xMin: 100,
-            xMax: 130,
-            yMin: 100,
-            yMax: 130
+            xMin: 1379,
+            xMax: 1399,
+            yMin: 395,
+            yMax: 431
         }
     },
     {
@@ -103,7 +103,21 @@ const gameLevels = [
             yMin: 318,
             yMax: 364
         }
+    },
+    {
+        id: 'mKpNx7RQ2YTj',
+        title: 'Level 21',
+        imageUrl: '/images/levels/waldo21_large.jpg',
+        imageWidth: 2828,
+        imageHeight: 1828,
+        targetArea: {
+            xMin: 459,
+            xMax: 484,
+            yMin: 1528,
+            yMax: 1569
+        }
     }
+
 ];
 
 module.exports = gameLevels;
