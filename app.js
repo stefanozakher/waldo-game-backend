@@ -47,8 +47,8 @@ io.on('connection', (socket) => {
         gameSessionController.updatePlayerStatus(gameShortId, playerId,status);
     });
 
-    socket.on('disconnect', (gameShortId, playerId) => {
-        // gameSessionController.leaveGame(gameShortId, playerId);
+    socket.on('disconnect', () => {
+        console.log('disconnect', socket.id);
     });
 
     // /////////////////////////////////////////////////////

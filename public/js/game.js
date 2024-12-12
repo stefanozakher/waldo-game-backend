@@ -30,11 +30,21 @@ document.addEventListener('DOMContentLoaded', function () {
     clientGameSession = new ClientGameSessionController(socket, gameShortId, gameSession);
     clientGameLevels = new ClientGameLevelsController(gameShortId, gameSession);
 
-    socket.on('gameStarted', (data) => { if (data.gameShortId === gameShortId) clientGameSession.startGame(data.started_at); });
-    socket.on('gameEnded', (data) => { if (data.gameShortId === gameShortId) clientGameSession.endGame(data.ended_at); });
+    socket.on('gameStarted', (data) => {
+        console.log('gameStarted', data);
+        clientGameSession.startGame(data.started_at);
+        clientGameLevels.loadCurrentLevel();
+    });
+    socket.on('gameEnded', (data) => {
+        console.log('gameEnded', data);
+        clientGameSession.endGame(data.ended_at);
+    });
 
     // Chat
-    socket.on('chatMessage', (data) => { console.log('Received chat message:', data); clientGameSession.getChat().addMessage(data); });
+    socket.on('chatMessage', (data) => {
+        console.log('Received chat message:', data);
+        clientGameSession.getChat().addMessage(data);
+    });
     socket.emit('loadChatMessages', gameShortId, (messages) => {
         console.log('Received chat messages:', messages);
         clientGameSession.getChat().loadMessages(messages);
@@ -59,12 +69,13 @@ document.addEventListener('DOMContentLoaded', function () {
         // Load current level
         clientGameLevels.loadCurrentLevel();
     }
-});
 
-// window.addEventListener('beforeunload', () => {
-//     clientGameSession.getPlayerList().leaveGame();
-//     socket.disconnect();
-// });
+    window.addEventListener('beforeunload', () => {
+        socket.emit('leaveGame', gameShortId, clientGameSession.getPlayer().playerId);
+        socket.disconnect();
+    });
+
+});
 
 // document.addEventListener('visibilitychange', () => {
 //     if (document.hidden) {

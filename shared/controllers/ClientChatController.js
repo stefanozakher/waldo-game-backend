@@ -21,13 +21,11 @@ class ClientChatController {
             });
         } else {
             this.sendButton.addEventListener('click', () => {
-                console.log('Send button clicked');
                 this.sendMessage();
             });
             
             this.messageInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
-                    console.log('Enter key pressed in message input');
                     this.sendMessage();
                 }
             });
@@ -36,8 +34,6 @@ class ClientChatController {
 
     sendMessage() {
         let message = this.messageInput.value.trim();
-        console.log('Attempting to send message:', message);
-
         if (message) {
             let playerId = this.gameSessionController.getPlayer().playerId;
             let playerName = this.gameSessionController.getPlayer().playerName;

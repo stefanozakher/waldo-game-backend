@@ -132,13 +132,19 @@ class GameSessionController {
         return null;
     }
     leaveGame(gameShortId, playerId) {
-        this.getPlayerList(gameShortId).leavePlayer(playerId);
+        if (this.getSession(gameShortId)) {
+            this.getPlayerList(gameShortId).leavePlayer({playerId: playerId});
+        }
     }
     setPlayerReady(gameShortId, playerId) {
-        this.updatePlayerStatus(gameShortId, playerId, 'ready');
+        if (this.getSession(gameShortId)) {
+            this.getPlayerList(gameShortId).updatePlayerStatus({playerId: playerId}, 'ready');
+        }
     }
     updatePlayerStatus(gameShortId, playerId, status) {
-        this.getPlayerList(gameShortId).updatePlayerStatus(playerId, status);
+        if (this.getSession(gameShortId)) {
+            this.getPlayerList(gameShortId).updatePlayerStatus({playerId: playerId}, status);
+        }
     }
 }
 

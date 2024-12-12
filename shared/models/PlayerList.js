@@ -53,16 +53,28 @@ class PlayerList {
         return player;
     }
 
-    removePlayer(playerId) {
-        this.state._players = this._players.filter(p => p.playerId !== playerId);
+    findPlayer(findPlayer) {
+        if (findPlayer.playerId) {
+            return this._players.find(p => p.playerId === findPlayer.playerId);
+        } else if (findPlayer.socketId) {
+            return this._players.find(p => p.socketId === findPlayer.socketId);
+        }
+        return null;
     }
 
-    leavePlayer(playerId) {
-        this.updatePlayerStatus(playerId, 'disconnected');
+    removePlayer(findPlayer) {
+        const player = this.findPlayer(findPlayer);
+        if (player) {
+            this.state._players = this._players.filter(p => p.playerId !== player.playerId);
+        }
     }
 
-    updatePlayerStatus(playerId, status) {
-        const player = this._players.find(p => p.playerId === playerId);
+    leavePlayer(findPlayer) {
+        this.updatePlayerStatus(findPlayer, 'disconnected');
+    }
+
+    updatePlayerStatus(findPlayer, status) {
+        const player = this.findPlayer(findPlayer);
         if (player) {
             player.status = status;
             this.state._players = [...this._players];

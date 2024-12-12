@@ -42,7 +42,7 @@ class ClientGameSessionController {
             let newPlayerId = Math.random().toString(36).substring(2, 11);
             waldoPlayer = {
                 playerId: newPlayerId,
-                playerName: `Player ${newPlayerId.slice(-4)}`
+                playerName: `${newPlayerId.slice(-4)}`
             };
             localStorage.setItem('waldoPlayer', JSON.stringify(waldoPlayer));
             console.log('Generated new player ID:', waldoPlayer.playerId);
@@ -53,7 +53,7 @@ class ClientGameSessionController {
     }
     // Methods
     startGame(started_at) {
-        console.log('startGame', this.gameSession.status);
+        console.log('startGame', this.getSession().status);
         if (this.getSession().status === 'waiting') {
             this.getSession().status = 'playing';
             this.getSession().started_at = started_at;
@@ -63,7 +63,7 @@ class ClientGameSessionController {
         return this.gameSession;
     }
     endGame(ended_at) {
-        console.log('endGame', this.gameSession.status);
+        console.log('endGame', this.getSession().status);
         if (this.getSession().status !== 'completed') {
             this.getSession().status = 'completed';
             this.getSession().ended_at = ended_at;
@@ -100,18 +100,17 @@ class ClientGameSessionController {
     }
     // Player methods
     setPlayerReady() {
-        //this.socket.emit('playerReady', this.gameShortId, this.player.playerId);
-        this.getPlayerList().updatePlayerStatus(this.getPlayer().playerId, 'ready');
+        this.getPlayerList().updatePlayerStatus(this.getPlayer(), 'ready');
     }
     setPlayerPlaying() {
-        this.getPlayerList().updatePlayerStatus(this.getPlayer().playerId, 'playing');
+        this.getPlayerList().updatePlayerStatus(this.getPlayer(), 'playing');
     }
     joinGame() {
         this.getPlayerList().addPlayer(this.getPlayer());
     }
     leaveGame() {
-        this.socket.emit('leaveGame', this.gameShortId, this.getPlayer().playerId);
-        this.getPlayerList().leavePlayer(this.getPlayer().playerId);
+        //this.socket.emit('leaveGame', this.gameShortId, this.getPlayer().playerId);
+        this.getPlayerList().leavePlayer(this.getPlayer());
     }
     areAllPlayersReady() {
         const players = this.getPlayers();
