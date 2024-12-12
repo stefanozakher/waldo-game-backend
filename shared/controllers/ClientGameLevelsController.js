@@ -1,6 +1,7 @@
 class ClientGameLevelsController {
     constructor(gameShortId, gameSession) {
         this.gameShortId = gameShortId;
+        this.gameBoard = null;
         this.gameBoardZoom = null;
         this.levels = gameSession.levels; // Array of game levels
         this.currentLevelIndex = 0; // Track the current level
@@ -9,45 +10,15 @@ class ClientGameLevelsController {
     }
 
     initializeElements() {
-        document.addEventListener('DOMContentLoaded', () => {
-            this.gameBoard = document.getElementById('gameBoard');
-            this.setupDoubleClickEvent();
-        });
+        this.gameBoard = document.getElementById('gameBoard');
 
-        if (!this.gameBoard) {
-            console.error('Failed to find game elements:', {
-                container: !!this.gameBoard
-            });
+        if (this.gameBoard) {
+            this.setupDoubleClickEvent();
         }
     }
 
-    loadCurrentLevel() {
-        const level = this.levels[this.currentLevelIndex];
-        console.log('Loading level:', level);
-        this.updateLevelUI(level);
-
-        var frame = document.getElementById('gameBoard');
-
-        this.gameBoardZoom = WZoom.create('#gameBoard-image', {
-            maxScale: 4,
-            onGrab: function () {
-                frame.style.cursor = 'grabbing';
-            },
-            onDrop: function () {
-                frame.style.cursor = 'grab';
-            },
-            zoomOnClick: false,
-            zoomOnDoubleClick: false
-        });
-
-        window.addEventListener('resize', () => {
-            if (this.gameBoardZoom) this.gameBoardZoom.prepare();
-        });
-    }
-
     setupDoubleClickEvent() {
-        const gameBoardImage = document.getElementById('gameBoard-image');
-        console.log('Setting up double-click event handler. Image element found:', !!gameBoardImage);
+        const gameBoardImage = document.getElementById('gameBoardImage');
 
         if (gameBoardImage) {
             gameBoardImage.addEventListener('dblclick', (event) => {
@@ -75,11 +46,9 @@ class ClientGameLevelsController {
                     const { xMin, xMax, yMin, yMax } = currentLevel.targetArea;
 
                     if (x >= xMin && x <= xMax && y >= yMin && y <= yMax) {
-                        console.log('HIT! Click coordinates are within target area');
                         // Add your success logic here
                         this.loadNextLevel();
                     } else {
-                        console.log('MISS! Click coordinates are outside target area');
                         // Add your miss logic here
                     }
                 } else {
@@ -90,10 +59,31 @@ class ClientGameLevelsController {
                     });
                 }
             });
-            console.log('Double-click event handler successfully attached');
-        } else {
-            console.error('Failed to set up double-click event: Game board image not found');
         }
+    }
+
+    loadCurrentLevel() {
+        const level = this.levels[this.currentLevelIndex];
+        console.log('Loading level:', level);
+        this.updateLevelUI(level);
+
+        var frame = document.getElementById('gameBoard');
+
+        this.gameBoardZoom = WZoom.create('#gameBoardImage', {
+            maxScale: 4,
+            onGrab: function () {
+                frame.style.cursor = 'grabbing';
+            },
+            onDrop: function () {
+                frame.style.cursor = 'grab';
+            },
+            zoomOnClick: false,
+            zoomOnDoubleClick: false
+        });
+
+        window.addEventListener('resize', () => {
+            if (this.gameBoardZoom) this.gameBoardZoom.prepare();
+        });
     }
 
     loadNextLevel() {

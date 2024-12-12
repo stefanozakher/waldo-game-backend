@@ -5,10 +5,36 @@ if (typeof require !== 'undefined' && typeof Player === 'undefined') {
 
 class PlayerList {
     constructor(gameShortId) {
-        this.gameShortId = gameShortId;
-        this.players = [];
-        this.events = typeof window === 'undefined' ? require('events') : null;
-        this.eventEmitter = this.events ? new this.events.EventEmitter() : null;
+        this._gameShortId = gameShortId;
+        this._players = [];
+        this._subscribers = new Set();
+        
+        // Create proxy for reactive updates
+        this.state = new Proxy(this, {
+            set: (target, property, value) => {
+                target[property] = value;
+                if (property === '_players') {
+                    this._notifySubscribers();
+                }
+                return true;
+            }
+        });
+    }
+
+    // Subscribe to changes
+    subscribe(callback) {
+        this._subscribers.add(callback);
+        // Initial call with current state
+        callback(this.toJSON());
+        
+        // Return unsubscribe function
+        return () => this._subscribers.delete(callback);
+    }
+
+    // Notify all subscribers of changes
+    _notifySubscribers() {
+        const data = this.toJSON();
+        this._subscribers.forEach(callback => callback(data));
     }
 
     addPlayer(playerData) {
@@ -16,20 +42,19 @@ class PlayerList {
             playerData : 
             new Player(playerData.playerId, playerData.playerName, playerData.status);
 
-        const existingIndex = this.players.findIndex(p => p.playerId === player.playerId);
+        const existingIndex = this._players.findIndex(p => p.playerId === player.playerId);
         if (existingIndex !== -1) {
-            this.players[existingIndex] = player;
+            this._players[existingIndex] = player;
         } else {
-            this.players.push(player);
+            this._players.push(player);
         }
-
-        this.emitUpdate();
+        
+        this.state._players = [...this._players];
         return player;
     }
 
     removePlayer(playerId) {
-        this.players = this.players.filter(p => p.playerId !== playerId);
-        this.emitUpdate();
+        this.state._players = this._players.filter(p => p.playerId !== playerId);
     }
 
     leavePlayer(playerId) {
@@ -37,45 +62,34 @@ class PlayerList {
     }
 
     updatePlayerStatus(playerId, status) {
-        const player = this.players.find(p => p.playerId === playerId);
+        const player = this._players.find(p => p.playerId === playerId);
         if (player) {
             player.status = status;
-            this.emitUpdate();
+            this.state._players = [...this._players];
         }
     }
+
     updateAllPlayersStatus(status) {
-        this.players.forEach(player => {
+        this._players.forEach(player => {
             player.status = status;
         });
-        this.emitUpdate();
+        this.state._players = [...this._players];
     }
 
     getPlayers() {
-        return this.players;
+        return [...this._players];
     }
 
     sync(players) {
-        this.players = players.map(p => new Player(p.playerId, p.playerName, p.status, p.socketId));
-        this.emitUpdate();
-    }
-
-    // Event handling (server-side only)
-    on(event, callback) {
-        if (this.eventEmitter) {
-            this.eventEmitter.on(event, callback);
-        }
-    }
-
-    emitUpdate() {
-        if (this.eventEmitter) {
-            this.eventEmitter.emit('updated', this.toJSON());
-        }
+        this.state._players = players.map(p => 
+            new Player(p.playerId, p.playerName, p.status, p.socketId)
+        );
     }
 
     toJSON() {
         return {
-            gameShortId: this.gameShortId,
-            players: this.players.map(p => p.toJSON())
+            gameShortId: this._gameShortId,
+            players: this._players.map(p => p.toJSON())
         };
     }
 }

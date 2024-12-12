@@ -4,11 +4,13 @@ class ClientGameSessionController {
         this.gameShortId = gameShortId;
         this.gameSession = gameSession;
 
-        //this.players = new ClientPlayerListController(socket, this);
-        this.playerlist = new PlayerList(gameShortId);
-        this.chat = new ClientChatController(socket, this);
-
         this.player = this.initializePlayer();
+
+        this.playerlist = new PlayerList(gameShortId);
+        this.playerlist.subscribe((state) => {
+            this.updatePlayerlistUI(state.players);
+        });
+        this.chat = new ClientChatController(socket, this);
     }
     // Getters
     getSession() {
@@ -118,14 +120,14 @@ class ClientGameSessionController {
         return players.every(player => ( player.status === 'ready' || player.status === 'disconnected'));
     }
     //
-    updatePlayerlistUI() {
+    updatePlayerlistUI(players) {
         const playersList = document.getElementById('playerlist');
         const templateContent = document.getElementById('player-list-item').innerHTML;
         
         // Compile and render the template
         const template = Handlebars.compile(templateContent);
         playersList.innerHTML = template({
-            players: this.getPlayers(),
+            players: players,
             currentPlayerId: this.getPlayer().playerId,
             gameSession: this.getSession()
         });

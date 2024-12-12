@@ -2,7 +2,7 @@
 <div class="container-fluid py-4">
     <!-- ########################## HEADER ########################## -->
     <%- include('gameHeader.ejs',{gameSession:gameSession}) %>
-
+    
     <!-- Add player avatars strip here -->
     <div class="row mb-3">
         <div class="col-12">
@@ -27,7 +27,7 @@
                     <div class="ratio ratio-4x3 rounded bg-secondary overflow-hidden">
                         <div id="gameBoard">
                             <% if (gameSession.status==='playing' && gameSession.levels.length> 0) { %>
-                                <img id="gameBoard-image" src="<%= gameSession.levels[0].imageUrl %>" alt="Game Level Image" class="img-fluid" />
+                                <img id="gameBoardImage" src="<%= gameSession.levels[0].imageUrl %>" alt="Game Level Image" class="img-fluid" />
                             <% } else { %>
                                 <p>No levels available.</p>
                             <% } %>
@@ -45,15 +45,13 @@
         </div>
     </div>
 </div>
-
-<!-- Add shared models before your game scripts -->
 <script src="/shared/models/Player.js"></script>
 <script src="/shared/models/PlayerList.js"></script>
 <script src="/shared/models/Message.js"></script>
 <script src="/shared/models/Chat.js"></script>
-<script src="/js/controllers/ClientGameSessionController.js"></script>
-<script src="/js/controllers/ClientGameLevelsController.js"></script>
-<script src="/js/controllers/ClientChatController.js"></script>
+<script src="/shared/controllers/ClientGameSessionController.js"></script>
+<script src="/shared/controllers/ClientGameLevelsController.js"></script>
+<script src="/shared/controllers/ClientChatController.js"></script>
 <script>
     const gameShortId = '<%= gameSession.short_id %>';
     const gameSession = <%- JSON.stringify(gameSession) %>;

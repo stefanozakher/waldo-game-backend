@@ -2,14 +2,23 @@ class Player {
     constructor(playerId, playerName, status = 'connected', socketId = null) {
         this.playerId = playerId;
         this.playerName = playerName;
+        /**
+         * Status can be:
+         * - connected
+         * - ready
+         * - playing
+         * - disconnected
+         */
         this.status = status;
+        this.socketId = socketId;
     }
 
     toJSON() {
         return {
             playerId: this.playerId,
             playerName: this.playerName,
-            status: this.status
+            status: this.status,
+            socketId: this.socketId
         };
     }
 }

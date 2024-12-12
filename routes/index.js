@@ -12,7 +12,7 @@ function createRouter(gameSessionController) {
         });
     });
 
-    router.get('/:gameShortId', (req, res) => {
+    router.get('/:gameShortId([A-Za-z0-9_-]{6})', (req, res) => {
         const gameShortId = req.params.gameShortId;
         const gameSession = gameSessionController.getSession(gameShortId);
 

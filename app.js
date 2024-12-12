@@ -58,10 +58,10 @@ io.on('connection', (socket) => {
     socket.on('createGame', (data, callback) => {
         const gameSession = gameSessionController.createGame(data);
 
-        gameSessionController.getPlayerList(gameSession.short_id).on('updated', (updatedPlayerList) => {
-            const { gameShortId, players } = updatedPlayerList;
-            console.log('Emitting player list update for game:', gameShortId);
-            io.to(gameShortId).emit('syncPlayerList', players);
+        // When the player list changes, emit the new state to all clients in the game
+        const unsubscribe = gameSessionController.getPlayerList(gameSession.short_id).subscribe((state) => {
+            console.log('Players updated:', state);
+            io.to(gameSession.short_id).emit('syncPlayerList', state);
         });
 
         // Send response back to client
