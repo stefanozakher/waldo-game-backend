@@ -25,9 +25,9 @@ function createRouter(gameSessionController) {
         res.render('index', {
             title: `Game ${gameShortId}`,
             page: 'pages/game',
-            gameSession: gameSession,
             gameShortId: gameShortId,
-            players: playerList ? playerList.getPlayers() : []
+            gameSession: gameSession.toJSON(),
+            players: playerList ? playerList.players : []
         });
     });
 

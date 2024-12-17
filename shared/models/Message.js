@@ -1,24 +1,59 @@
-class Message {
-    constructor(playerId, playerName, message, timestamp = Date.now()) {
-        this.playerId = playerId;
-        this.playerName = playerName;
-        this.message = message;
-        this.timestamp = timestamp;
+// Check if Message already exists in global scope
+if (typeof window !== 'undefined' && window.Message) {
+    // If it exists, use the existing one
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = window.Message;
     }
-    static fromJSON(data) {
-        return new Message(data.playerId, data.playerName, data.message, data.timestamp);
+} else {
+    // Import dependencies in Node.js environment
+    if (typeof require !== 'undefined') {
+        var ReactiveModel = require('./ReactiveModel');
     }
 
-    toJSON() {
-        return {
-            playerId: this.playerId,
-            playerName: this.playerName,
-            message: this.message,
-            timestamp: this.timestamp
-        };
-    }
-}
+    class Message extends ReactiveModel {
+        constructor(playerId, playerName, message, timestamp = Date.now()) {
+            super({
+                playerId: playerId,
+                playerName: playerName,
+                message: message,
+                timestamp: timestamp
+            });
+        }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Message;
+        // Getters
+        get playerId() { return this.state.playerId; }
+        get playerName() { return this.state.playerName; }
+        get message() { return this.state.message; }
+        get timestamp() { return this.state.timestamp; }
+
+        // Setters
+        set message(value) {
+            this.state.message = value;
+        }
+
+        toJSON() {
+            return {
+                playerId: this.state.playerId,
+                playerName: this.state.playerName,
+                message: this.state.message,
+                timestamp: this.state.timestamp
+            };
+        }
+
+        static fromJSON(data) {
+            return new Message(
+                data.playerId, 
+                data.playerName, 
+                data.message, 
+                data.timestamp
+            );
+        }
+    }
+
+    // Make it available to both Node.js and browser
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = Message;
+    } else {
+        window.Message = Message;
+    }
 } 

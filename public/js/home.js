@@ -13,9 +13,9 @@ document.getElementById('gameForm').addEventListener('submit', function (event) 
     const seconds = document.getElementById('seconds').value;
     const levelsIds = getSelectedLevelsIds();
 
-    socket.emit('createGame', { seconds: seconds, levelsIds: levelsIds }, (response) => {
+    socket.emit('game.create', { seconds: seconds, levelsIds: levelsIds }, (response) => {
         if (response.success) {
-            window.location.href = `/${response.gameSession.short_id}`;
+            window.location.href = `/${response.gameSession.shortId}`;
         } else {
             alert('Failed to create game session');
         }

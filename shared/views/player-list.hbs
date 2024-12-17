@@ -1,0 +1,18 @@
+<ul class="list-inline mb-0">
+    {{#if players.length}}
+    {{#each players}}
+    <li class="list-inline-item status-{{this.status}}" data-player-id="{{this.playerId}}" data-player-name="{{this.playerName}}" data-player-status="{{this.status}}">
+        <img src="https://api.dicebear.com/6.x/avataaars/svg?seed={{this.playerName}}" alt="Player 1"
+            class="rounded-circle me-2" width="32" height="32">
+        <span class="player-name">{{this.playerName}}</span>
+        <span class="player-status">
+            {{#if (or (eq this.status 'disconnected') (eq this.status 'unknown'))}}
+                ({{default this.status 'unknown'}})
+            {{/if}}
+        </span>
+    </li>
+    {{/each}}
+    {{else}}
+    <li class="list-inline-item">No players have joined yet</li>
+    {{/if}}
+</ul>

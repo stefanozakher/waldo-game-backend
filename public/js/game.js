@@ -3,21 +3,27 @@ if (!socket) { const socket = io(); }
 var clientGameSession = null;
 var clientGameLevels = null;
 
-function startGame() {
-    let gameSession = clientGameSession.startGame(Date.now());
-    if (gameSession) {
-        socket.emit('startGame', gameShortId, { started_at: gameSession.started_at });
-        clientGameLevels.loadCurrentLevel();
+function startGame(button) {
+    button.disabled = true;
+
+    //let gameSession = clientGameSession.startGame();
+    if (gameShortId) {
+        socket.emit('game.start', gameShortId, { startedAt: Date.now() });
+
+        button.textContent = 'Game started!';
+    } else {
+        button.disabled = false;
+        button.textContent = 'Start Game';
     }
 }
 
 function setPlayerReady(button) {
-    clientGameSession.setPlayerReady(button);
-
     button.disabled = true;
     button.textContent = 'Ready!';
 
-    socket.emit('playerReady', gameShortId, clientGameSession.getPlayer().playerId);
+    gameSession.playerlist.currentPlayer.status = 'ready';
+    
+    socket.emit('playerReady', gameShortId, gameSession.playerlist.currentPlayer.playerId);
 }
 
 function copyGameLinkToClipboard() {
@@ -27,59 +33,67 @@ function copyGameLinkToClipboard() {
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    clientGameSession = new ClientGameSessionController(socket, gameShortId, gameSession);
-    clientGameLevels = new ClientGameLevelsController(gameShortId, gameSession);
+    // Initialize player list
+    const playerListElement = document.getElementById('player-list');
+    const playerListComponent = new PlayerListComponent(playerListElement);
+    playerListComponent.init(gameSession.playerlist);
 
-    socket.on('gameStarted', (data) => {
-        console.log('gameStarted', data);
-        clientGameSession.startGame(data.started_at);
-        clientGameLevels.loadCurrentLevel();
+    // Initialize game board
+    const gameBoardElement = document.getElementById('game-board');
+    const gameBoardComponent = new GameBoardComponent(gameBoardElement);
+    gameBoardComponent.init(gameSession);
+
+    clientGameSession = new ClientGameSessionController(socket, gameShortId, gameSession);
+
+    socket.on('game.started', (data) => {
+        console.log('[socket event] game.started: Received event from room:', gameShortId);
+        clientGameSession.startGame(data.startedAt);
+
+        gameSession.startGameSession(data.startedAt);
     });
-    socket.on('gameEnded', (data) => {
-        console.log('gameEnded', data);
-        clientGameSession.endGame(data.ended_at);
+    socket.on('game.ended', (data) => {
+        console.log('[socket event] game.ended: Received event from room:', gameShortId);
+        clientGameSession.endGame(data.endedAt);
+
+        gameSession.endGameSession(data.endedAt);
+    });
+    socket.on('game.updated.status', (data) => {
+        console.log('[socket event] game.updated.status: Received event from room:', gameShortId, data.status);
+        gameSession.status = data.status;
     });
 
     // Chat
-    socket.on('chatMessage', (data) => {
-        console.log('Received chat message:', data);
-        clientGameSession.getChat().addMessage(data);
+    // socket.on('chatMessage', (data) => {
+    //     console.log('Received chat message:', data);
+    //     clientGameSession.getChat().addMessage(data);
+    // });
+    // socket.emit('loadChatMessages', gameShortId, (messages) => {
+    //     console.log('Received chat messages:', messages);
+    //     clientGameSession.getChat().loadMessages(messages);
+    // });
+
+    socket.on('playerlist.updated', (newPlayerList) => {
+        console.log('[socket event] playerlist.updated: Received event from room:', gameShortId);
+        gameSession.playerlist.sync(newPlayerList);
     });
-    socket.emit('loadChatMessages', gameShortId, (messages) => {
-        console.log('Received chat messages:', messages);
-        clientGameSession.getChat().loadMessages(messages);
-    });
-
-    socket.emit('joinGame', gameShortId, clientGameSession.getPlayer().toJSON());
-    socket.on('syncPlayerList', (state) => {
-        console.log('Received player list update:', state);
-        clientGameSession.getPlayerList().sync(state.players);
-    });
-
-    // Handle late joiners
-    if (clientGameSession.getSession().status === 'playing') {
-        clientGameSession.setPlayerPlaying();
-        clientGameSession.joinGame();
-        clientGameSession.updateGameUI();
-        clientGameSession.startTimer();
-
-        // Send player status to server
-        socket.emit('playerStatus', gameShortId, clientGameSession.getPlayer().playerId, 'playing');
-
-        // Load current level
-        clientGameLevels.loadCurrentLevel();
-    }
 
     window.addEventListener('beforeunload', () => {
-        socket.emit('leaveGame', gameShortId, clientGameSession.getPlayer().playerId);
+        socket.emit('player.leave', gameShortId, gameSession.playerlist.currentPlayer.playerId);
         socket.disconnect();
     });
 
-});
+    // Handle late joiners
+    // if (clientGameSession.getSession().status === 'playing') {
+    //     clientGameSession.setPlayerPlaying();
+    //     clientGameSession.joinGame();
+    //     clientGameSession.updateGameUI();
+    //     clientGameSession.startTimer();
 
-// document.addEventListener('visibilitychange', () => {
-//     if (document.hidden) {
-//         clientPlayerList.leaveGame();
-//         socket.disconnect();
-//     }
-// });
+    //     // Send player status to server
+    //     socket.emit('playerStatus', gameShortId, clientGameSession.getPlayer().playerId, 'playing');
+    // }
+
+    // Once all elements are loaded, join the game.
+    socket.emit('player.join', gameShortId, gameSession.playerlist.currentPlayer);
+    socket.emit('game.update.status', gameShortId, 'waiting');
+});

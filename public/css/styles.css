@@ -53,3 +53,40 @@ body {
     left: 0;
     transition: transform 0.1s ease;
 }
+
+/* Status-based background colors */
+.status-connected {
+    background-color: #cfe2ff;  /* Bootstrap primary light */
+    border-color: #b6d4fe;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.status-disconnected {
+    background-color: #f8d7da;  /* Bootstrap danger light */
+    border-color: #f5c2c7;
+    color: #999;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.status-ready {
+    background-color: #d1e7dd;  /* Bootstrap success light */
+    border-color: #badbcc;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.status-playing {
+    background-color: #cff4fc;  /* Bootstrap info light */
+    border-color: #b6effb;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.status-unknown {
+    background-color: #e2e3e5;  /* Bootstrap secondary light */
+    border-color: #d3d6d8;
+    padding: 10px;
+    border-radius: 5px;
+}
