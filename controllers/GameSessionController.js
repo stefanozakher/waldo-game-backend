@@ -61,14 +61,14 @@ class GameSessionController {
         const { startedAt } = data;
         const gameSession = this.getSession(gameShortId);
 
-        if (gameSession && gameSession.status === 'waiting') {
-            this.getSession(gameShortId).status = 'playing';
-            this.getSession(gameShortId).startedAt = startedAt;
+        if (gameSession.status !== 'playing') {
+            gameSession.status = 'playing';
+            gameSession.startedAt = startedAt;
 
             // Update all players to playing status
             this.getPlayerList(gameShortId).updateAllPlayersStatus('playing');
 
-            this.storeGameSession(gameSession);
+            //this.storeGameSession(gameSession);
             this.startGameSessionTimer(gameShortId);
 
             return true;
@@ -79,19 +79,23 @@ class GameSessionController {
     }
 
     endGame(gameShortId, data) {
+        if (!this.isValidGameShortId(gameShortId)) {
+            console.log(`Invalid game short ID: ${gameShortId}`);
+            return false;
+        }
         console.log(`Ending game: ${gameShortId}`);
 
         const { endedAt } = data;
         const gameSession = this.getSession(gameShortId);
 
-        if (gameSession && gameSession.status !== 'completed') {
+        if (gameSession.status !== 'completed') {
             gameSession.status = 'completed';
             gameSession.endedAt = endedAt;
             
             // Update all players to completed status
             this.getPlayerList(gameShortId).updateAllPlayersStatus('completed');
             
-            this.storeGameSession(gameSession);
+            //this.storeGameSession(gameSession);
 
             return true;
         } else {

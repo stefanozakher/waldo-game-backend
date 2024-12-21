@@ -49,6 +49,7 @@ class GameBoardComponent {
     }
     
     renderGameBoard() {
+        console.log('Rendering game board:', this.gameSession.toJSON());
         // Compile and render the template
         const template = Handlebars.compile(document.getElementById('template-game-board').innerHTML);
         this.containerGameBoard.innerHTML = template({

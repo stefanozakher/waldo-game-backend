@@ -15,16 +15,11 @@ class GameSession extends ReactiveModel {
     constructor(playtimeInSeconds) {
         // Generate shortId only if shortid is available (server-side)
         const shortId = typeof shortid !== 'undefined' ? shortid.generate().slice(0, 6) : null;
-        super({
+
+        // Initial state
+        const initialState = {
             shortId: shortId,
             playtimeInSeconds: playtimeInSeconds,
-            /**
-             * Game session status
-             * - created: game session is created
-             * - waiting: waiting for players to join
-             * - playing: game is in progress
-             * - completed: game is completed
-             */
             status: 'created',
             startedAt: null,
             endedAt: null,
@@ -33,7 +28,10 @@ class GameSession extends ReactiveModel {
             levels: {},
             levelsIds: [],
             currentLevelId: null
-        });
+        };
+
+        // Call the parent constructor with the initial state
+        super(initialState);
     }
 
     // Getters
@@ -47,99 +45,41 @@ class GameSession extends ReactiveModel {
     get levels() { return this.state.levels; }
     get levelsIds() { return this.state.levelsIds; }
     get currentLevelId() { return this.state.currentLevelId; }
+
     // Setters
-    set shortId(value) {
-        this.state = {
-            ...this.state,
-            shortId: value
-        };
-    }
-
-    set status(value) {
-        this.state = {
-            ...this.state,
-            status: value
-        };
-        // console.log('Is Proxy?:', Proxy.isProxy?.(this.state));
-        // console.log('Status observers:', this.observers?.status || 'No observers');
-        // this.notifyObservers('status', value, this.state.status);
-    }
-
-    set startedAt(value) {
-        this.state = {
-            ...this.state,
-            startedAt: value
-        };
-    }
-
-    set endedAt(value) {
-        this.state = {
-            ...this.state,
-            endedAt: value
-        };
-    }
-
-    set chat(value) {
-        this.state = {
-            ...this.state,
-            chat: value instanceof Chat ? value : Chat.fromJSON(value)
-        };
-    }
-
-    set playerlist(value) {
-        this.state = {
-            ...this.state,
-            playerlist: value instanceof PlayerList ? value : PlayerList.fromJSON(value)
-        };
-    }
-
-    set levels(value) {
-        value.forEach((l) => this.addLevel(l));
-    }
-
-    set currentLevelId(value) {
-        this.state = {
-            ...this.state,
-            currentLevelId: value
-        };
-    }
+    set shortId(value) { this.state.shortId = value; }
+    set status(value) { this.state.status = value; }
+    set startedAt(value) { this.state.startedAt = value; }
+    set endedAt(value) { this.state.endedAt = value; }
+    set chat(value) { this.state.chat = value instanceof Chat ? value : Chat.fromJSON(value); }
+    set playerlist(value) { this.state.playerlist = value instanceof PlayerList ? value : PlayerList.fromJSON(value); }
+    set levels(value) { value.forEach((l) => this.addLevel(l)); }
+    set currentLevelId(value) { this.state.currentLevelId = value; }
 
     // Methods to modify arrays
     addLevel(level) {
-        this.state = {
-            ...this.state,
-            levels: { 
-                ...this.state.levels, 
-                [level.id]: level 
-            },
-            levelsIds: [...this.state.levelsIds, level.id]
+        this.state.levels = { 
+            ...this.state.levels, 
+            [level.id]: level 
         };
+        this.state.levelsIds = [...this.state.levelsIds, level.id];
     }
 
     removeLevel(levelId) {
         const { [levelId]: removedLevel, ...remainingLevels } = this.state.levels;
-        this.state = {
-            ...this.state,
-            levels: remainingLevels,
-            levelsIds: this.state.levelsIds.filter(id => id !== levelId)
-        };
+        this.state.levels = remainingLevels;
+        this.state.levelsIds = this.state.levelsIds.filter(id => id !== levelId);
     }
 
     startGameSession(startedAt) {
-        this.state = {
-            ...this.state,
-            status: 'playing',
-            startedAt: startedAt,
-            currentLevelId: this.state.levelsIds[0]
-        };
+        this.state.status = 'playing';
+        this.state.startedAt = startedAt;
+        this.state.currentLevelId = this.state.levelsIds[0];
     }
 
     endGameSession(endedAt) {
-        this.state = {
-            ...this.state,
-            status: 'completed',
-            endedAt: endedAt
-        };
+        this.state.status = 'completed';
+        this.state.endedAt = endedAt;
     }
 
     getCurrentLevel() {
@@ -156,7 +96,7 @@ class GameSession extends ReactiveModel {
 
     static fromJSON(json) {
         const gameSession = new GameSession(json.playtimeInSeconds);
-        gameSession._state = {
+        gameSession.state = {
             ...json,
             playerlist: json.playerlist ? PlayerList.fromJSON(json.playerlist) : new PlayerList(json.shortId),
             chat: json.chat ? Chat.fromJSON(json.chat) : new Chat(json.shortId)

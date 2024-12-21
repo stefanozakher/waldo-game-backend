@@ -66,25 +66,18 @@ io.on('connection', (socket) => {
         const gameShortId = gameSession.shortId;
 
         // When the player list changes, emit the new state to all clients in the game
-        gameSession.playerlist.subscribe('players', (newPlayerList, oldPlayerList) => {
+        gameSession.playerlist.subscribe('players', (newPlayerList) => {
             io.to(gameShortId).emit('playerlist.updated', newPlayerList);
         });
-        gameSession.subscribe('status', (newStatus, oldStatus) => {
-            console.log('GameSession.status changed to', newStatus);
-            io.to(gameShortId).emit('game.updated.status', {status: newStatus});
+        // When the game session changes, emit the new state to all clients in the game
+        gameSession.subscribe(['status','startedAt','endedAt','currentLevelId'], (property, newValue, oldValue) => {
+            console.log('GameSession updated', property,'from', oldValue,'to', newValue);
+            io.to(gameShortId).emit('game.session.updated', {
+                property: property,
+                newValue: newValue,
+                oldValue: oldValue
+            });
         });
-        gameSession.subscribe('startedAt', (newStartedAt, oldStartedAt) => {
-            console.log('GameSession.startedAt changed to', newStartedAt);
-            io.to(gameShortId).emit('game.updated.startedAt', {startedAt: newStartedAt});
-        });
-        gameSession.subscribe('endedAt', (newEndedAt, oldEndedAt) => {
-            console.log('GameSession.endedAt changed to', newEndedAt);
-            io.to(gameShortId).emit('game.updated.endedAt', {endedAt: newEndedAt});
-        });
-
-        gameSession.status = 'unknown';
-        gameSession.startedAt = new Date();
-        gameSession.endedAt = new Date();
 
         gameSessionController.storeGameSession(gameSession);
 
@@ -97,9 +90,7 @@ io.on('connection', (socket) => {
         if (gameSessionController.startGame(gameShortId, data)) {
             console.log('[socket event] game.started: Sending event to room:', gameShortId);
             socket.to(gameShortId).emit('game.started', {
-                gameShortId: gameShortId,
-                startedAt: gameSessionController.getSession(gameShortId).startedAt,
-                players: gameSessionController.getPlayerList(gameShortId).players
+                startedAt: gameSessionController.getSession(gameShortId).startedAt
             });
         }
     });

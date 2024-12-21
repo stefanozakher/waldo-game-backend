@@ -16,10 +16,10 @@ if (typeof window !== 'undefined' && window.ReactiveModel) {
                     if (target[property] === value)
                         return Reflect.set(...arguments);
 
-                    console.log('---> Setting', property, 'to', value, 'from', target[property]);
                     self.notifyObservers(property, value, target[property]);
+                    self.notifyObservers('*', value, target[property]); // Notify wildcard observers
 
-                    return Reflect.set(...arguments);;
+                    return Reflect.set(...arguments);
                 }
             });
 
@@ -27,24 +27,36 @@ if (typeof window !== 'undefined' && window.ReactiveModel) {
             this.observers = new Map();
         }
         
-        subscribe(property, callback) {
+        subscribe(properties, callback) {
+            if (!Array.isArray(properties)) {
+            properties = [properties];
+            }
+
+            properties.forEach(property => {
             if (!this.observers.has(property)) {
                 this.observers.set(property, new Set());
             }
             this.observers.get(property).add(callback);
-
-            console.log('Subscribed to', property, 'with callback', callback);
+            });
 
             // Return unsubscribe function
             return () => {
+            properties.forEach(property => {
                 this.observers.get(property).delete(callback);
+            });
             };
         }
 
         notifyObservers(property, newValue, oldValue) {
             if (this.observers.has(property)) {
                 this.observers.get(property).forEach(callback => {
-                    callback(newValue, oldValue);
+                    if (callback.length === 1) {
+                        callback(newValue);
+                    } else if (callback.length === 2) {
+                        callback(newValue, oldValue);
+                    } else {
+                        callback(property, newValue, oldValue);
+                    }
                 });
             }
         }

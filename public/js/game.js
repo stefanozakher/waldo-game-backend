@@ -52,14 +52,16 @@ document.addEventListener('DOMContentLoaded', function () {
         gameSession.startGameSession(data.startedAt);
     });
     socket.on('game.ended', (data) => {
-        console.log('[socket event] game.ended: Received event from room:', gameShortId);
+        console.log('[socket: game.ended] Received event from room:', gameShortId);
         clientGameSession.endGame(data.endedAt);
 
         gameSession.endGameSession(data.endedAt);
     });
-    socket.on('game.updated.status', (data) => {
-        console.log('[socket event] game.updated.status: Received event from room:', gameShortId, data.status);
-        gameSession.status = data.status;
+    socket.on('game.session.updated', (data) => {
+        const { property, newValue, oldValue } = data;
+        console.log('[socket: game.session.updated] Received event from room:', gameShortId, data);
+        gameSession[property] = newValue;
+        // gameSession.status = data.status;
     });
 
     // Chat
