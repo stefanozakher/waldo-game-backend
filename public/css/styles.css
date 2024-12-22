@@ -4,6 +4,12 @@ body {
     background-color: #f4f4f9;
 }
 
+.sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
 .timer-container {
     display: inline-flex;
     align-items: center;
@@ -34,31 +40,26 @@ body {
     max-height: 1200px;
 }
 
-#gameBoard {
+#game-board {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-#zoom-container {
-    width: 500px;
-    height: 500px;
+#game-level {
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
     position: relative;
-    border: 2px solid #333;
-}
-#zoomable-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    transition: transform 0.1s ease;
 }
 
 /* Status-based background colors */
 .status-connected {
     background-color: #cfe2ff;  /* Bootstrap primary light */
     border-color: #b6d4fe;
-    padding: 10px;
+    padding: 3px;
     border-radius: 5px;
 }
 
@@ -66,27 +67,27 @@ body {
     background-color: #f8d7da;  /* Bootstrap danger light */
     border-color: #f5c2c7;
     color: #999;
-    padding: 10px;
+    padding: 3px;
     border-radius: 5px;
 }
 
 .status-ready {
     background-color: #d1e7dd;  /* Bootstrap success light */
     border-color: #badbcc;
-    padding: 10px;
+    padding: 3px;
     border-radius: 5px;
 }
 
 .status-playing {
     background-color: #cff4fc;  /* Bootstrap info light */
     border-color: #b6effb;
-    padding: 10px;
+    padding: 3px;
     border-radius: 5px;
 }
 
 .status-unknown {
     background-color: #e2e3e5;  /* Bootstrap secondary light */
     border-color: #d3d6d8;
-    padding: 10px;
+    padding: 3px;
     border-radius: 5px;
 }

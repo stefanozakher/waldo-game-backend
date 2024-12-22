@@ -20,7 +20,7 @@ function startGame(button) {
 
 function setPlayerReady(button) {
     button.disabled = true;
-    button.textContent = 'Ready!';
+    button.textContent = '... waiting for others';
 
     gameSession.playerlist.currentPlayer.status = 'ready';
     socket.emit('player.status', gameShortId, gameSession.playerlist.currentPlayer.playerId, 'ready');
@@ -56,17 +56,21 @@ document.addEventListener('DOMContentLoaded', function () {
         Reflect.set(gameSession, property, newValue);
     });
 
-    gameSession.subscribe('status',(newStatus) => {
+    const renderGameSessionStatus = (status) => {
         const gameSessionStatusElement = document.getElementById('game-session-status');
-        gameSessionStatusElement.textContent = newStatus;
+        gameSessionStatusElement.textContent = status;
         gameSessionStatusElement.className = 'badge ' +
             (
-                newStatus === 'waiting' ? 'bg-secondary' :
-                newStatus === 'playing' ? 'bg-primary' :
-                newStatus === 'completed' ? 'bg-success' :
-                newStatus === 'timeout' ? 'bg-warning' : 'bg-info'
-            );
-    })
+                status === 'waiting' ? 'bg-secondary' :
+                status === 'playing' ? 'bg-primary' :
+                status === 'completed' ? 'bg-success' :
+                status === 'timeout' ? 'bg-warning' : 'bg-info' );
+    };
+    renderGameSessionStatus(gameSession.status);
+
+    gameSession.subscribe('status',(newStatus) => {
+        renderGameSessionStatus(newStatus)
+    });
 
     // Chat
     // socket.on('chatMessage', (data) => {
