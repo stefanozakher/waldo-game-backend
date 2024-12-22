@@ -32,13 +32,16 @@ class GameBoardComponent {
             this.setupSubscription();
 
             this.renderGameBoard();
+
+            if (this.gameSession.status === 'playing')
+                this.renderGameLevel();
         }
     }
 
     setupSubscription() {
         // Subscribe to gameSession changes
         this.unsubscribe.add(this.gameSession.subscribe('status', (newStatus) => {
-            console.log('GameBoardComponent: received update on game session status. New value:', newStatus);
+            console.log('GameBoardComponent: New game session status', newStatus);
             this.renderGameBoard();
 
             if (newStatus === 'playing') {
@@ -46,17 +49,21 @@ class GameBoardComponent {
             }
         }));
         this.unsubscribe.add(this.gameSession.subscribe('currentLevelId', (newLevelId) => {
-            console.log('GameBoardComponent: received update on current level. New value:', newLevelId);
+            console.log('GameBoardComponent: New current level id', newLevelId);
             this.renderGameLevel();
         }));
-        this.unsubscribePlayers = this.gameSession.playerlist.subscribe('players', (newPlayers) => {
-            console.log('GameBoardComponent: checking if all players are ready. New players:', newPlayers);
-            // Only re-render the game board once all players are ready
-            if (this.gameSession.playerlist.areAllPlayersReady()) {
-                this.renderGameBoard();
-                this.unsubscribePlayers();
-            }
-        });
+
+        // Setup a hook to start the game, if the game session is still 'waiting'.
+        if (this.gameSession.status === 'waiting') {
+            this.unsubscribePlayers = this.gameSession.playerlist.subscribe('players', (newPlayers) => {
+                console.log('GameBoardComponent: checking if all players are ready.');
+                // Only re-render the game board once all players are ready
+                if (this.gameSession.playerlist.areAllPlayersReady()) {
+                    this.renderGameBoard();
+                    this.unsubscribePlayers();
+                }
+            });
+        }
     }
 
     destroy() { this.cleanup(); }

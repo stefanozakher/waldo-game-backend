@@ -128,6 +128,8 @@ class GameSession extends ReactiveModel {
         const currentIndex = this.state.levelsIds.indexOf(this.state.currentLevelId);
         if (currentIndex < this.state.levelsIds.length - 1) {
             this.state.currentLevelId = this.state.levelsIds[currentIndex + 1];
+        } else {
+            console.log('Failed to load next level.');
         }
     }
 

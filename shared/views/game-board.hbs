@@ -1,14 +1,14 @@
 {{#if (eq gameSession.status 'waiting')}}
+
     {{#if (eq currentPlayer.status 'connected')}}
     <button type="button" class="btn btn-success btn-lg" onclick="setPlayerReady(this)">I am Ready</button>
-    {{else if areAllPlayersReady}}
+    {{else if (and (eq currentPlayer.status 'ready') areAllPlayersReady)}}
     <button type="button" class="btn btn-success btn-lg" onclick="startGame(this)">Start Game</button>
     {{else}}
     <div>Waiting for other players...</div>
     {{/if}}
-{{/if}}
 
-{{#if (eq gameSession.status 'playing')}}
+{{else if (eq gameSession.status 'playing')}}
     <div id="game-level">
         <!-- <img id="game-board-image" src="{{currentLevel.imageUr}}" alt="{{currentLevel.title}}" data-level-id="{{currentLevelId}}" /> -->
         <!-- URL of example picture: https://worka.github.io/files/wheel_zoom_example.jpg -->

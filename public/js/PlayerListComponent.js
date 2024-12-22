@@ -33,11 +33,11 @@ class PlayerListComponent {
     }
 
     render(players = null) {
-        console.log('PlayerListComponent: render', players || this.playerList );
+        console.log('PlayerListComponent: render', players || this.playerList.toJSON() );
         // Compile and render the template
         const template = Handlebars.compile(document.getElementById('template-player-list').innerHTML);
         this.container.innerHTML = template({
-            players: players || this.playerList.players,
+            players: players || this.playerList.toJSON(),
             currentPlayerId: this.playerList.currentPlayer.playerId
         });
     }
