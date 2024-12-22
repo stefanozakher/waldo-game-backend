@@ -4,7 +4,7 @@
             <div class="col-md-4 mb-3 mb-md-0">
                 <h1 class="h4 mb-0">
                     Game Session: <%= gameSession.short_id %>
-                    <span id="gameStatus" 
+                    <span id="game-session-status" 
                         class="badge 
                                 <%= gameSession.status === 'waiting' ? 'bg-secondary' :
                                     gameSession.status === 'playing' ? 'bg-primary' :
@@ -17,7 +17,7 @@
                 <% if (gameSession.status !== 'completed') { %>
                     <span class="d-inline-block">
                     <i class="bi bi-clock me-2"></i>Time left:
-                        <span id="gameSessionTimer" class="font-monospace timer-value">
+                        <span id="game-session-timer" class="font-monospace timer-value">
                             <% if (gameSession.status === 'playing') { %>
                                 <% var elapsedSeconds = Math.floor(
                                     (gameSession.started_at +

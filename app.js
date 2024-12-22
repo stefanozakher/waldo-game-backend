@@ -26,13 +26,17 @@ app.use('/', createRouter(gameSessionController));
 
 // Socket.IO connection
 io.on('connection', (socket) => {
-    console.log('New client connected:', socket.id);
+    // console.log('New client connected:', socket.id);
 
     // Then define the event listeners with the shared sync
     socket.on('player.join', (gameShortId, data) => {
         socket.join(gameShortId);
-        if (gameSessionController.getPlayerList(gameShortId).addPlayer(data)) {
+        if (gameSessionController.isValidGameShortId(gameShortId) && gameSessionController.getPlayerList(gameShortId).addPlayer(data)) {
             console.log(`Player ${data.playerId} joined room:`, gameShortId);
+
+            // Once the first player joined, the game session status changes to 'waiting'
+            if (gameSessionController.getSession(gameShortId).status === 'created')
+                gameSessionController.getSession(gameShortId).status = 'waiting';
         }
     });
 
@@ -41,20 +45,14 @@ io.on('connection', (socket) => {
             gameSessionController.getPlayerList(gameShortId).leavePlayer({playerId: playerId});
         }
     });
-
-    socket.on('playerReady', (gameShortId, playerId) => {
-        if (gameSessionController.isValidGameShortId(gameShortId)) {
-            gameSessionController.getPlayerList(gameShortId).updatePlayerStatus({playerId: playerId}, 'ready');
-        }
-    });
-    socket.on('playerStatus', (gameShortId, playerId, status) => {
+    socket.on('player.status', (gameShortId, playerId, status) => {
         if (gameSessionController.isValidGameShortId(gameShortId)) {
             gameSessionController.getPlayerList(gameShortId).updatePlayerStatus({playerId: playerId}, status);
         }
     });
 
     socket.on('disconnect', () => {
-        console.log('disconnect', socket.id);
+        // console.log('disconnect', socket.id);
     });
 
     // /////////////////////////////////////////////////////
@@ -62,7 +60,7 @@ io.on('connection', (socket) => {
     //
     // createGame
     socket.on('game.create', (data, callback) => {
-        const gameSession = gameSessionController.createGame(data);
+        const gameSession = gameSessionController.create(data);
         const gameShortId = gameSession.shortId;
 
         // When the player list changes, emit the new state to all clients in the game
@@ -71,42 +69,39 @@ io.on('connection', (socket) => {
         });
         // When the game session changes, emit the new state to all clients in the game
         gameSession.subscribe(['status','startedAt','endedAt','currentLevelId'], (property, newValue, oldValue) => {
-            console.log('GameSession updated', property,'from', oldValue,'to', newValue);
-            io.to(gameShortId).emit('game.session.updated', {
+            console.log('Game session updated', property,'from', oldValue,'to', newValue);
+            io.to(gameShortId).emit('game.updated', {
                 property: property,
                 newValue: newValue,
                 oldValue: oldValue
             });
         });
 
-        gameSessionController.storeGameSession(gameSession);
+        // gameSessionController.storeGameSession(gameSession);
 
         // Sending response to client
         callback({ success: true, gameSession: gameSession });
     });
-    // startGame
+    // Starting a game session
     socket.on('game.start', (gameShortId, data) => {
-        console.log('[socket event] game.start: Received request for game:', gameShortId);
-        if (gameSessionController.startGame(gameShortId, data)) {
-            console.log('[socket event] game.started: Sending event to room:', gameShortId);
-            socket.to(gameShortId).emit('game.started', {
-                startedAt: gameSessionController.getSession(gameShortId).startedAt
-            });
+        console.log('[socket: game.start] Start game session', gameShortId);
+        if (gameSessionController.start(gameShortId, data)) {
+            console.log('Game session started',data.startedAt);
         }
     });
-    // endGame
-    socket.on('game.end', (gameShortId, data) => {
-        if (gameSessionController.endGame(gameShortId, data)) {
-            console.log('[socket event] game.ended: Sending event to room:', gameShortId);
-            socket.to(gameShortId).emit('game.ended', {
+    // Completing a game session
+    /* socket.on('game.complete', (gameShortId, data) => {
+        console.log('[socket: game.ended] Complete game session:', gameShortId);
+        if (gameSessionController.complete(gameShortId, data)) {
+            socket.to(gameShortId).emit('game.completed', {
                 gameShortId: gameShortId,
                 endedAt: gameSessionController.getSession(gameShortId).endedAt,
                 players: gameSessionController.getPlayerList(gameShortId).players
             });
         }
-    });
+    });*/
 
-    socket.on('game.update.status', (gameShortId, status) => {
+    socket.on('game.status', (gameShortId, status) => {
         if (gameSessionController.isValidGameShortId(gameShortId)) {
             gameSessionController.getSession(gameShortId).status = status;
         }

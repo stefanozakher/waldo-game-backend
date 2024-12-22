@@ -1,63 +1,90 @@
 class GameBoardComponent {
-    constructor(containerGameBoard, containerGameLevel) {
-        this.containerGameBoard = containerGameBoard || document.getElementById('game-board');
-        this.containerGameLevel = containerGameLevel || document.getElementById('game-level');
+    constructor(containerGameBoard = null, containerGameLevel = null) {
+        this._containerGameBoard = containerGameBoard || document.getElementById('game-board');
+        this._containerGameLevel = containerGameLevel || document.getElementById('game-level');
 
         // Create initial HTML structure
         this.containerGameBoard.innerHTML = `
             <p>Nothing yet.</p>
         `;
+
+        this.unsubscribe = new Set();
+    }
+
+    get gameSession() { return this._gameSession; }
+    get containerGameBoard() {
+        if (this._containerGameBoard === null) { 
+            this._containerGameBoard = document.getElementById('game-board');
+        }
+        return this._containerGameBoard;
+    }
+    get containerGameLevel() {
+        if (this._containerGameLevel === null) {
+            this._containerGameLevel = document.getElementById('game-level');
+        }
+        return this._containerGameLevel;
     }
     
     init(gameSession) {
-        this.gameSession = gameSession;
-        
-        // Subscribe to gameSession changes
-        this.unsubscribeStatus = gameSession.subscribe('status', (newStatus,oldStatus) => {
-            /**
-             * Example of a newGameSession:
-             * {
-             *   status: 'playing',
-             *   startedAt: '2024-01-01T00:00:00Z',
-             *   currentLevelId: '1234567890',
-             *   levels: [ ... ],
-             *   levelsIds: [ ... ],
-             *   playerlist: { ... },
-             *   chat: { ... }
-             * }
-             */
+        if (this._gameSession !== gameSession) {
+            this.cleanup();
+            this._gameSession = gameSession;
+            this.setupSubscription();
+
             this.renderGameBoard();
-        });
-        this.unsubscribePlayers = gameSession.playerlist.subscribe('players', (newGameSession,oldGameSession) => {
+        }
+    }
+
+    setupSubscription() {
+        // Subscribe to gameSession changes
+        this.unsubscribe.add(this.gameSession.subscribe('status', (newStatus) => {
+            console.log('GameBoardComponent: received update on game session status. New value:', newStatus);
+            this.renderGameBoard();
+
+            if (newStatus === 'playing') {
+                this.renderGameLevel();
+            }
+        }));
+        this.unsubscribe.add(this.gameSession.subscribe('currentLevelId', (newLevelId) => {
+            console.log('GameBoardComponent: received update on current level. New value:', newLevelId);
+            this.renderGameLevel();
+        }));
+        this.unsubscribePlayers = this.gameSession.playerlist.subscribe('players', (newPlayers) => {
+            console.log('GameBoardComponent: checking if all players are ready. New players:', newPlayers);
             // Only re-render the game board once all players are ready
             if (this.gameSession.playerlist.areAllPlayersReady()) {
                 this.renderGameBoard();
                 this.unsubscribePlayers();
             }
         });
-        
-        this.renderGameBoard();
     }
-    
-    destroy() {
-        if (this.unsubscribeStatus) {
-            this.unsubscribeStatus();
-        }
+
+    destroy() { this.cleanup(); }
+    cleanup() {
+        this._gameSession = null;
+        this.unsubscribe.forEach((unsub) => unsub());
+        this.unsubscribe.clear();
         if (this.unsubscribePlayers) {
             this.unsubscribePlayers();
+            this.unsubscribePlayers = null;
         }
     }
+
+    /**
+     * Render the game board
+     */
     
-    renderGameBoard() {
-        console.log('Rendering game board:', this.gameSession.toJSON());
+    renderGameBoard(gameSession) {
+        const gs = gameSession || this.gameSession;
+        console.log('GameBoardComponent: render', gs.toJSON());
         // Compile and render the template
         const template = Handlebars.compile(document.getElementById('template-game-board').innerHTML);
         this.containerGameBoard.innerHTML = template({
-            gameSession: this.gameSession.toJSON(),
-            players: this.gameSession.playerlist.players,
-            currentPlayer: this.gameSession.playerlist.currentPlayer.toJSON(),
-            currentPlayerId: this.gameSession.playerlist.currentPlayer.playerId,
-            areAllPlayersReady: this.gameSession.playerlist.areAllPlayersReady()
+            gameSession: gs.toJSON(),
+            players: gs.playerlist.players,
+            currentPlayer: gs.playerlist.currentPlayer.toJSON(),
+            currentPlayerId: gs.playerlist.currentPlayer.playerId,
+            areAllPlayersReady: gs.playerlist.areAllPlayersReady()
         });
     }
 
@@ -68,6 +95,8 @@ class GameBoardComponent {
     setupGameBoardZoom() {
         const level = this.gameSession.getCurrentLevel();
         console.log('Loading level:', level);
+
+        var frame = this.containerGameLevel;
 
         this.gameBoardZoom = WZoom.create('#game-board-image', {
             maxScale: 4,
@@ -137,7 +166,7 @@ class GameBoardComponent {
 
             if (x >= xMin && x <= xMax && y >= yMin && y <= yMax) {
                 // Add your success logic here
-                this.loadNextLevel();
+                this.gameSession.nextLevel();
             } else {
                 // Add your miss logic here
             }
@@ -150,13 +179,16 @@ class GameBoardComponent {
         }
     }
 
-    renderGameLevel(levelId = null){
-        const levelIdToRender = levelId || this.gameSession.currentLevelId;
-        const levelToRender = this.gameSession.levels[ levelIdToRender ];
+    renderGameLevel(gameSession){
+        const gs = gameSession || this.gameSession;
+        const levelIdToRender = gs.currentLevelId || gs.levelsIds[0];
+        const levelToRender = gs.levels[ levelIdToRender ];
+
+        console.log('GameBoardComponent: render level', gs.toJSON(), levelToRender);
 
         const template = Handlebars.compile(document.getElementById('template-game-level').innerHTML);
         this.containerGameLevel.innerHTML = template({
-            gameSession: this.gameSession.toJSON(),
+            gameSession: gs.toJSON(),
             currentLevel: levelToRender,
             currentLevelId: levelIdToRender
         });

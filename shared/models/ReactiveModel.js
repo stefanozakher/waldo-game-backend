@@ -16,10 +16,14 @@ if (typeof window !== 'undefined' && window.ReactiveModel) {
                     if (target[property] === value)
                         return Reflect.set(...arguments);
 
-                    self.notifyObservers(property, value, target[property]);
-                    self.notifyObservers('*', value, target[property]); // Notify wildcard observers
+                    const oldValue = target[property];
 
-                    return Reflect.set(...arguments);
+                    if (Reflect.set(...arguments)) {
+                        self.notifyObservers(property, value, oldValue);
+                        self.notifyObservers('*', value, oldValue); // Notify wildcard observers
+                        return true;
+                    }
+                    return false;
                 }
             });
 
@@ -29,21 +33,21 @@ if (typeof window !== 'undefined' && window.ReactiveModel) {
         
         subscribe(properties, callback) {
             if (!Array.isArray(properties)) {
-            properties = [properties];
+                properties = [properties];
             }
 
             properties.forEach(property => {
-            if (!this.observers.has(property)) {
-                this.observers.set(property, new Set());
-            }
-            this.observers.get(property).add(callback);
+                if (!this.observers.has(property)) {
+                    this.observers.set(property, new Set());
+                }
+                this.observers.get(property).add(callback);
             });
 
             // Return unsubscribe function
             return () => {
-            properties.forEach(property => {
-                this.observers.get(property).delete(callback);
-            });
+                properties.forEach(property => {
+                    this.observers.get(property).delete(callback);
+                });
             };
         }
 

@@ -15,6 +15,8 @@ if (typeof window !== 'undefined' && window.Player) {
              * - ready
              * - playing
              * - disconnected
+             * - lost
+             * - won
              */
             this.status = status;
             this.socketId = socketId;

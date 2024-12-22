@@ -1,14 +1,15 @@
 if (!socket) { const socket = io(); }
 
-var clientGameSession = null;
-var clientGameLevels = null;
-
 function startGame(button) {
     button.disabled = true;
 
     //let gameSession = clientGameSession.startGame();
     if (gameShortId) {
-        socket.emit('game.start', gameShortId, { startedAt: Date.now() });
+        const startedAt = Date.now();
+
+        socket.emit('game.start', gameShortId, { startedAt: startedAt});
+
+        gameSession.start(startedAt);
 
         button.textContent = 'Game started!';
     } else {
@@ -23,7 +24,7 @@ function setPlayerReady(button) {
 
     gameSession.playerlist.currentPlayer.status = 'ready';
     
-    socket.emit('playerReady', gameShortId, gameSession.playerlist.currentPlayer.playerId);
+    socket.emit('player.status', gameShortId, gameSession.playerlist.currentPlayer.playerId, 'ready');
 }
 
 function copyGameLinkToClipboard() {
@@ -32,6 +33,9 @@ function copyGameLinkToClipboard() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    // Once all elements are loaded, join the game session to receive any updates from hereon.
+    socket.emit('player.join', gameShortId, gameSession.playerlist.currentPlayer);
 
     // Initialize player list
     const playerListElement = document.getElementById('player-list');
@@ -43,26 +47,34 @@ document.addEventListener('DOMContentLoaded', function () {
     const gameBoardComponent = new GameBoardComponent(gameBoardElement);
     gameBoardComponent.init(gameSession);
 
-    clientGameSession = new ClientGameSessionController(socket, gameShortId, gameSession);
+    // Initialize timer
+    const timerComponent = new TimerComponent();
+    timerComponent.init(gameSession);
 
-    socket.on('game.started', (data) => {
-        console.log('[socket event] game.started: Received event from room:', gameShortId);
-        clientGameSession.startGame(data.startedAt);
-
-        gameSession.startGameSession(data.startedAt);
+    /*socket.on('game.started', (data) => {
+        console.log('[socket: game.started] Game sessoin started', gameShortId);
+        gameSession.start(data.startedAt);
     });
-    socket.on('game.ended', (data) => {
-        console.log('[socket: game.ended] Received event from room:', gameShortId);
-        clientGameSession.endGame(data.endedAt);
-
-        gameSession.endGameSession(data.endedAt);
-    });
-    socket.on('game.session.updated', (data) => {
+    socket.on('game.completed', (data) => {
+        console.log('[socket: game.completed] Game session completed', gameShortId);
+        gameSession.complete(data.endedAt);
+    });*/
+    socket.on('game.updated', (data) => {
         const { property, newValue, oldValue } = data;
         console.log('[socket: game.session.updated] Received event from room:', gameShortId, data);
-        gameSession[property] = newValue;
-        // gameSession.status = data.status;
+        Reflect.set(gameSession, property, newValue);
     });
+
+    gameSession.subscribe('status',(newStatus) => {
+        const gameSessionStatusElement = document.getElementById('game-session-status');
+        gameSessionStatusElement.textContent = newStatus;
+        gameSessionStatusElement.className = 'badge ' +
+            (
+                newStatus === 'waiting' ? 'bg-secondary' :
+                newStatus === 'playing' ? 'bg-primary' :
+                newStatus === 'completed' ? 'bg-success' : 'bg-info'
+            );
+    })
 
     // Chat
     // socket.on('chatMessage', (data) => {
@@ -75,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // });
 
     socket.on('playerlist.updated', (newPlayerList) => {
-        console.log('[socket event] playerlist.updated: Received event from room:', gameShortId);
+        console.log('[socket: playerlist.updated] New player list', newPlayerList);
         gameSession.playerlist.sync(newPlayerList);
     });
 
@@ -94,8 +106,4 @@ document.addEventListener('DOMContentLoaded', function () {
     //     // Send player status to server
     //     socket.emit('playerStatus', gameShortId, clientGameSession.getPlayer().playerId, 'playing');
     // }
-
-    // Once all elements are loaded, join the game.
-    socket.emit('player.join', gameShortId, gameSession.playerlist.currentPlayer);
-    socket.emit('game.update.status', gameShortId, 'waiting');
 });

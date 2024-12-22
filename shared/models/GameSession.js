@@ -12,22 +12,33 @@ if (typeof shortid !== 'undefined') {
 }
 
 class GameSession extends ReactiveModel {
-    constructor(playtimeInSeconds) {
-        // Generate shortId only if shortid is available (server-side)
-        const shortId = typeof shortid !== 'undefined' ? shortid.generate().slice(0, 6) : null;
+    constructor({
+        shortId = null,
+        playtimeInSeconds = 180,
+        status = 'created',
+        startedAt = null,
+        endedAt = null,
+        chat = null,
+        playerlist = null,
+        levels = {},
+        levelsIds = [],
+        currentLevelId = null
+    } = {}) {
+        // Generate shortId only if shortid is available (server-side) and not provided
+        shortId = shortId || (typeof shortid !== 'undefined' ? shortid.generate().slice(0, 6) : null);
 
         // Initial state
         const initialState = {
             shortId: shortId,
             playtimeInSeconds: playtimeInSeconds,
-            status: 'created',
-            startedAt: null,
-            endedAt: null,
-            chat: new Chat(shortId),
-            playerlist: new PlayerList(shortId),
-            levels: {},
-            levelsIds: [],
-            currentLevelId: null
+            status: status,
+            startedAt: startedAt,
+            endedAt: endedAt,
+            chat: chat ? (chat instanceof Chat ? chat : Chat.fromJSON(chat)) : new Chat(shortId),
+            playerlist: playerlist ? (playerlist instanceof PlayerList ? playerlist : PlayerList.fromJSON(playerlist)) : new PlayerList(shortId),
+            levels: levels,
+            levelsIds: levelsIds,
+            currentLevelId: currentLevelId
         };
 
         // Call the parent constructor with the initial state
@@ -48,7 +59,14 @@ class GameSession extends ReactiveModel {
 
     // Setters
     set shortId(value) { this.state.shortId = value; }
-    set status(value) { this.state.status = value; }
+    set status(value) {
+        // Validate status
+        const validStatuses = ['created', 'waiting', 'playing', 'completed', 'timeout'];
+        if (!validStatuses.includes(value)) {
+            throw new Error(`Invalid status: ${value}. Valid statuses are: ${validStatuses.join(', ')}`);
+        }
+        this.state.status = value;
+    }
     set startedAt(value) { this.state.startedAt = value; }
     set endedAt(value) { this.state.endedAt = value; }
     set chat(value) { this.state.chat = value instanceof Chat ? value : Chat.fromJSON(value); }
@@ -71,19 +89,46 @@ class GameSession extends ReactiveModel {
         this.state.levelsIds = this.state.levelsIds.filter(id => id !== levelId);
     }
 
-    startGameSession(startedAt) {
+    start(startedAt) {
+        if (this.status !== 'waiting') {
+            console.log('Failed to start game session. Game session status', this.status);
+            return false;
+        }
         this.state.status = 'playing';
         this.state.startedAt = startedAt;
         this.state.currentLevelId = this.state.levelsIds[0];
+        return true;
     }
 
-    endGameSession(endedAt) {
+    complete(endedAt) {
+        if (this.status !== 'playing'){
+            console.log('Failed to complete game session. Game session status', this.status);
+            return false;
+        }
         this.state.status = 'completed';
         this.state.endedAt = endedAt;
+        return true;
+    }
+
+    timeout(endedAt){
+        if (this.status !== 'playing') {
+            console.log('Failed to timeout game session. Game session status', this.status);
+            return false;
+        }
+        this.state.status = 'timeout';
+        this.state.endedAt = endedAt;
+        return true;
     }
 
     getCurrentLevel() {
         return this.state.levels[this.state.currentLevelId];
+    }
+
+    nextLevel() {
+        const currentIndex = this.state.levelsIds.indexOf(this.state.currentLevelId);
+        if (currentIndex < this.state.levelsIds.length - 1) {
+            this.state.currentLevelId = this.state.levelsIds[currentIndex + 1];
+        }
     }
 
     toJSON() {
@@ -95,13 +140,7 @@ class GameSession extends ReactiveModel {
     }
 
     static fromJSON(json) {
-        const gameSession = new GameSession(json.playtimeInSeconds);
-        gameSession.state = {
-            ...json,
-            playerlist: json.playerlist ? PlayerList.fromJSON(json.playerlist) : new PlayerList(json.shortId),
-            chat: json.chat ? Chat.fromJSON(json.chat) : new Chat(json.shortId)
-        };
-        return gameSession;
+        return new GameSession(json);
     }
 }
 

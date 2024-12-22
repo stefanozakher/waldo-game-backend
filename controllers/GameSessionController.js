@@ -4,7 +4,7 @@ const gameLevels = require('../store/gameLevels');
 
 class GameSessionController {
     constructor() {
-        console.log('Initializing GameSessionController');
+        console.log('Initialising GameSessionController');
     }
 
     // Getter
@@ -30,13 +30,12 @@ class GameSessionController {
 
     storeGameSession(gameSession) {
         gameSessions[gameSession.shortId] = gameSession;
-        console.log(`Game session stored with ID: ${gameSession.shortId}`);
     }
 
-    createGame(data) {
+    create(data) {
         console.log('Creating new game session', data);
 
-        const gameSession = new GameSession(data.seconds);
+        const gameSession = new GameSession({ playtimeInSeconds: data.seconds });
         const shortId = gameSession.shortId;
 
         this.storeGameSession(gameSession);
@@ -50,7 +49,7 @@ class GameSessionController {
         return this.getSession(shortId);
     }
 
-    startGame(gameShortId, data) {
+    start(gameShortId, data) {
         if (!this.isValidGameShortId(gameShortId)) {
             console.log(`Invalid game short ID: ${gameShortId}`);
             return false;
@@ -61,24 +60,20 @@ class GameSessionController {
         const { startedAt } = data;
         const gameSession = this.getSession(gameShortId);
 
-        if (gameSession.status !== 'playing') {
-            gameSession.status = 'playing';
-            gameSession.startedAt = startedAt;
-
+        // Can only start a game session that is 'waiting' to be started
+        if (gameSession.start(startedAt)) {
             // Update all players to playing status
             this.getPlayerList(gameShortId).updateAllPlayersStatus('playing');
 
-            //this.storeGameSession(gameSession);
-            this.startGameSessionTimer(gameShortId);
+            this.startTimer(gameShortId);
 
             return true;
-        } else {
-            console.log('Failed to start game');
         }
+
         return false;
     }
 
-    endGame(gameShortId, data) {
+    complete(gameShortId, data) {
         if (!this.isValidGameShortId(gameShortId)) {
             console.log(`Invalid game short ID: ${gameShortId}`);
             return false;
@@ -88,26 +83,39 @@ class GameSessionController {
         const { endedAt } = data;
         const gameSession = this.getSession(gameShortId);
 
-        if (gameSession.status !== 'completed') {
-            gameSession.status = 'completed';
-            gameSession.endedAt = endedAt;
-            
+        // Can only complete a game session that is 'playing'
+        if (gameSession.complete(endedAt)) {
             // Update all players to completed status
-            this.getPlayerList(gameShortId).updateAllPlayersStatus('completed');
-            
-            //this.storeGameSession(gameSession);
-
+            // this.getPlayerList(gameShortId).updateAllPlayersStatus('completed');
             return true;
-        } else {
-            console.log('Failed to end game');
         }
 
         return false;
     }
 
-    startGameSessionTimer(gameShortId){
+    timeout(gameShortId,data){
+        if (!this.isValidGameShortId(gameShortId)) {
+            console.log(`Invalid game short ID: ${gameShortId}`);
+            return false;
+        }
+        console.log(`Timing out game session: ${gameShortId}`);
+
+        const { endedAt } = data;
+        const gameSession = this.getSession(gameShortId);
+
+        if (gameSession.timeout(endedAt)) {  
+            // Update all players to lost status
+            this.getPlayerList(gameShortId).updateAllPlayersStatus('lost');
+            return true;
+        }
+        return false;
+    }
+
+    startTimer(gameShortId){
         setTimeout(() => {
-            this.endGame(gameShortId, { endedAt: Date.now() });
+            // When the timeout hits, the game session times out.
+            this.timeout(gameShortId, { endedAt: Date.now() });
+        // Set the timeout to playtimeInSeconds + 1 second grace.
         }, this.getSession(gameShortId).playtimeInSeconds * 1000 + 1000);
     }
 }
