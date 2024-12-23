@@ -1,9 +1,12 @@
 <div class="mb-1">
     {{#if isCurrentPlayer}}
-    <span class="fw-bold">You</span>
+    <!-- Current player message -->
+    <span class="text-muted">[{{formatTime timestamp}}] </span><span class="fw-bold">You: </span>{{message}}
+    {{else if (eq playerId null)}}
+    <!-- System message -->
+    <span class="text-muted">[{{formatTime timestamp}}] </span><strong class="text-primary"><span class="fw-bold">{{playerName}}: </span>{{message}}</strong>
     {{else}}
-    <span class="fw-bold">{{playerName}}</span>
+    <!-- Other player message -->
+    <span class="text-muted">[{{formatTime timestamp}}] </span><span class="fw-bold">{{playerName}} </span>{{message}}
     {{/if}}
-    <span class="text-muted">[{{formatTime timestamp}}]:</span>
-    {{message}}
 </div>

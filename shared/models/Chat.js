@@ -20,6 +20,15 @@ if (typeof window !== 'undefined' && window.Chat) {
             super(initialState);
         }
 
+        addSystemMessage(messageText) {
+            this.addMessage({
+                playerId: null,
+                playerName: null,
+                message: messageText,
+                timestamp: Date.now()
+            });
+        }
+
         addMessage(message) {
             const latestMessage = message instanceof Message ? message : new Message(message);
             this.state.latestMessage = latestMessage;

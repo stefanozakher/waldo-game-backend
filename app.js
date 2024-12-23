@@ -37,6 +37,8 @@ io.on('connection', (socket) => {
             // Once the first player joined, the game session status changes to 'waiting'
             if (gameSessionController.getSession(gameShortId).status === 'created')
                 gameSessionController.getSession(gameShortId).status = 'waiting';
+
+            gameSessionController.getChat(gameShortId).addSystemMessage("New player joined: " + data.playerName);
         }
     });
 
@@ -74,6 +76,9 @@ io.on('connection', (socket) => {
                 newValue: newValue,
                 oldValue: oldValue
             });
+
+            if (property === 'status')
+                gameSessionController.getChat(gameShortId).addSystemMessage("Game " + newValue);
         });
 
         /**
