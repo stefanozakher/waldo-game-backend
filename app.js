@@ -124,22 +124,12 @@ io.on('connection', (socket) => {
     // /////////////////////////////////////////////////////    
     // Chat events
     //
-    // loadChatMessages
-    socket.on('loadChatMessages', (gameShortId, callback) => {
-        callback(gameSessionController.getChat(gameShortId).getMessagesInChronologicalOrder());
-    });
-    // chatMessage
     socket.on('chat.message', (gameShortId, messageData) => {
         console.log('Received chat message:', messageData);
         const chat = gameSessionController.getChat(gameShortId);
-        try {
-            const newMessage = Message.fromJSON(messageData);
-            chat.addMessage(newMessage);
-            //socket.to(gameShortId).emit('chat.message', newMessage.toJSON());
-        } catch (error) {
-            console.error('Error processing message:', error);
-            console.error('Original message data:', messageData);
-        }
+        
+        const newMessage = Message.fromJSON(messageData);
+        chat.addMessage(newMessage);
     });
 });
 

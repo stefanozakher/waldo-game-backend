@@ -11,11 +11,10 @@ body {
 }
 
 .chat-messages {
-    height: 300px;
     overflow-y: auto;
     font-size: 0.9rem;
     line-height: 1.2;
-    max-height: 1200px;
+    max-height: 300px;
 }
 
 #game-board {

@@ -42,8 +42,6 @@ function sendMessage(){
         message: document.getElementById('chat-message-text').value,
         timestamp: Date.now()
     });
-
-    gameSession.chat.addMessage(message);
     
     socket.emit('chat.message', gameShortId, message.toJSON());
     
@@ -54,8 +52,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Once all elements are loaded, join the game session to receive any updates from hereon.
     socket.emit('player.join', gameShortId, gameSession.playerlist.currentPlayer);
-
-    
 
     // Initialize game board
     const gameBoardElement = document.getElementById('game-board');
@@ -82,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /********************************************
-     * Render the game session status
+     * Render the game session status and level
      */
     const renderGameSessionStatus = (status) => {
         const gameSessionStatusElement = document.getElementById('game-session-status');
@@ -95,21 +91,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 status === 'timeout' ? 'bg-warning' : 'bg-info' );
     };
     renderGameSessionStatus(gameSession.status);
-
     gameSession.subscribe('status',(newStatus) => {
         renderGameSessionStatus(newStatus)
     });
 
+    const renderGameSessionLevel = (levelTitle) => {
+        const gameSessionLevelElement = document.getElementById('game-session-level');
+        gameSessionLevelElement.textContent = levelTitle;
+    }
+    gameSession.subscribe('currentLevelId', () => {
+        renderGameSessionLevel(gameSession.getCurrentLevel().title);
+    });
+
     // Chat
     socket.on('chat.message', (data) => {
-        console.log('Received chat message:', data);
-    //     clientGameSession.getChat().addMessage(data);
+        gameSession.chat.addMessage(data);
     });
-    // socket.emit('loadChatMessages', gameShortId, (messages) => {
-    //     console.log('Received chat messages:', messages);
-    //     clientGameSession.getChat().loadMessages(messages);
-    // });
-
+    // Playerlist
     socket.on('playerlist.updated', (newPlayerList) => {
         console.log('[socket: playerlist.updated] New player list', newPlayerList);
         gameSession.playerlist.sync(newPlayerList);

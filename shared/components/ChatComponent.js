@@ -49,6 +49,7 @@ class ChatComponent {
         const msg = message || gs.chat.latestMessage.toJSON();
         // Add the new message to the chat
         this.container.innerHTML += this.compileMessageHTML(message);
+        this.container.scrollTop = this.container.scrollHeight;
     }
 
     renderChat(chat = null) {
@@ -61,5 +62,7 @@ class ChatComponent {
         c.messages.forEach((msg) => {
             this.container.innerHTML += this.compileMessageHTML(msg);
         });
+
+        this.container.scrollTop = this.container.scrollHeight;
     }
 }
