@@ -1,0 +1,79 @@
+<!-- views/pages/game.ejs -->
+<div class="container-fluid py-0 ps-0">
+
+    <header class="game-header sticky-top px-3 py-2">
+        <div class="header-content">
+            <div class="game-info">
+                <img src="/favicon/favicon-32x32.png" alt="Icon" class="game-icon" width="40" height="40">
+                <div class="game-title">
+                    <h1>
+                        <span id="game-session-level">Level 1</span>
+                        <span id="game-session-status" class="badge 
+                                        <%= gameSession.status === 'waiting' ? 'bg-secondary' :
+                                            gameSession.status === 'playing' ? 'bg-primary' :
+                                            gameSession.status === 'completed' ? 'bg-success' : 'bg-info' %>">
+                            <%= gameSession.status.charAt(0).toUpperCase() + gameSession.status.slice(1) %>
+                        </span>
+                    </h1>
+                </div>
+            </div>
+            <div class="game-controls">
+                <div class="timer">
+                    <span id="game-session-timer" class="time-value text-dark bg-white rounded-pill px-3 py-1 font-monospace mr-2"></span>
+                </div>
+                <button class="share-button" onclick="copyGameLinkToClipboard()">
+                    <i class="bi bi-share"></i>
+                    Share Game
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="row g-4">
+        <div class="col-md-8 align-middle">
+            <div id="game-board"></div>
+        </div>
+        <div class="col-md-4 align-middle">
+            <div id="player-list" class="my-3"></div>
+            <%- include('gameChat.ejs') %>
+        </div>
+    </div>
+</div>
+<script src="/shared/models/ReactiveModel.js"></script>
+<script src="/shared/models/Player.js"></script>
+<script src="/shared/models/PlayerList.js"></script>
+<script src="/shared/models/Message.js"></script>
+<script src="/shared/models/Chat.js"></script>
+<script src="/shared/models/GameSession.js"></script>
+<script src="/shared/components/GameBoardComponent.js"></script>
+<script src="/shared/components/PlayerListComponent.js"></script>
+<script src="/shared/components/ChatComponent.js"></script>
+<script src="/shared/components/TimerComponent.js"></script>
+<script>
+    const gameShortId = '<%= gameSession.shortId %>';
+    const gameSessionJSON = <%- JSON.stringify(gameSession) %>;
+    const gameSession = GameSession.fromJSON(gameSessionJSON);
+    const currentPlayer = gameSession.playerlist.currentPlayer;
+</script>
+<script id="template-player-list" type="text/x-handlebars-template">
+    <%- include('../../shared/views/player-list.hbs', {
+        gameShortId: gameShortId,
+        gameSession: gameSession,
+        players: players
+    }) %>
+</script>
+<script id="template-game-board" type="text/x-handlebars-template">
+    <%- include('../../shared/views/game-board.hbs', {
+        gameShortId: gameShortId,
+        gameSession: gameSession,
+        players: players
+    }) %>
+</script>
+<script id="template-game-level" type="text/x-handlebars-template">
+    <%- include('../../shared/views/game-level.hbs', {
+        gameShortId: gameShortId,
+        gameSession: gameSession,
+        players: players
+    }) %>
+</script>
+<script src="js/game.js"></script>

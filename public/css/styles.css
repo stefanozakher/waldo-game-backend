@@ -1,0 +1,175 @@
+/* public/css/styles.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+}
+
+.sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.chat-messages {
+    height: 300px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    max-height: 1200px;
+}
+
+#game-board {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+#game-level {
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.game-header {
+    position: sticky;
+    top: 0;
+    background-color: #000000;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+} */
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.game-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.game-icon {
+    margin-right: 1rem;
+}
+
+.game-title h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.current-level {
+    font-size: 0.875rem;
+    opacity: 0.8;
+    margin: 0;
+}
+
+.game-controls {
+    display: flex;
+    align-items: center;
+}
+
+.timer {
+    display: flex;
+    align-items: center;
+    margin-right: 1.5rem;
+}
+
+.share-button {
+    background-color: white;
+    color: #2563eb;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.share-button:hover {
+    background-color: #f0f9ff;
+}
+
+.share-button i {
+    margin-right: 0.5rem;
+}
+
+@media (min-width: 768px) {
+    .header-content {
+        flex-direction: row;
+    }
+
+    .game-info {
+        margin-bottom: 0;
+    }
+}
+
+/* Status-based background colors */
+.status-connected {
+    background-color: #0066ff;
+    /* Bootstrap primary light */
+    border-color: #b6d4fe;
+    color: #000;
+}
+
+.status-disconnected {
+    background-color: #ff0015;
+    /* Bootstrap danger light */
+    border-color: #f5c2c7;
+    color: #999;
+}
+
+.status-ready {
+    background-color: #6fad7d;
+    /* Bootstrap success light */
+    border-color: #badbcc;
+    color: #000;
+}
+
+.status-playing {
+    background-color: #00ff0d;
+    /* Bootstrap info light */
+    border-color: #b6effb;
+    color: #000;
+}
+
+.status-unknown {
+    background-color: #e2e3e5;
+    /* Bootstrap secondary light */
+    border-color: #d3d6d8;
+    color: #666;
+}
+
+
+.player-list-card {
+    margin: 0 auto;
+}
+
+.hover-bg-light:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border: 2px solid white;
+}
+
+.min-width-0 {
+    min-width: 0;
+}

@@ -1,0 +1,22 @@
+<div class="card h-100">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Chat</h5>
+    </div>
+    <div class="card-body d-flex flex-column">
+        <div id="game-session-chat-messages" class="chat-messages mb-3">
+            <!-- Chat messages will be populated here -->
+        </div>
+        <div class="mt-auto">
+            <div class="input-group">
+                <input id="chat-message-text" class="form-control" type="text" placeholder="Type your message..." onkeypress="if(event.key === 'Enter') sendMessage()">
+                <button id="chat-send-message" class="btn btn-primary" type="button" onclick="sendMessage()">
+                    <i class="bi bi-send"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script id="template-chat-message" type="text/x-handlebars-template">
+    <%- include('../../shared/views/message.hbs') %>
+</script>

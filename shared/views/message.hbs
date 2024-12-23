@@ -1,0 +1,9 @@
+<div class="mb-1">
+    {{#if isCurrentPlayer}}
+    <span class="fw-bold">You</span>
+    {{else}}
+    <span class="fw-bold">{{playerName}}</span>
+    {{/if}}
+    <span class="text-muted">[{{formatTime timestamp}}]:</span>
+    {{message}}
+</div>

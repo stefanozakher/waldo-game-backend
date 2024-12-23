@@ -1,19 +1,16 @@
 {
-  "name": "wheres-waldo-game",
+  "name": "my-node-app",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "A basic Node.js app with Socket.IO and EJS",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "express": "^4.21.1",
-    "socket.io": "^4.8.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.7"
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "shortid": "^2.2.16",
+    "socket.io": "^4.5.4",
+    "vanilla-js-wheel-zoom": "^9.0.4"
   }
 }

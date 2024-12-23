@@ -1,0 +1,48 @@
+<!-- views/pages/home.ejs -->
+<div class="container mt-5">
+  <h2 class="text-center">Home Page</h2>
+  <p class="text-center">This is the home page of your Node.js application.</p>
+
+  <form id="gameForm" class="mt-4">
+    <div class="form-group">
+      <label for="seconds">Enter seconds:</label>
+      <input type="number" class="form-control" id="seconds" name="seconds" placeholder="60" required>
+    </div>
+    <div class="d-flex justify-content-between align-items-center">
+      <label class="form-label fs-5 fw-semibold">Select levels</label>
+      <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#selectLevels"
+        aria-expanded="false" aria-controls="productSelection">
+        <i class="bi bi-chevron-down"></i>
+        <span class="visually-hidden">Show level selection</span>
+      </button>
+    </div>
+    <div class="collapse" id="selectLevels">
+      <div class="row mt-3">
+        <% gameLevels.forEach(function(level) { %>
+          <div class="col-md-4 mb-3">
+            <div class="card h-100">
+              <img src="<%= level.imageUrl %>" class="card-img-top img-fluid" alt="<%= level.name %>"
+                style="object-fit: cover; height: 200px;">
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">
+                  <%= level.name %>
+                </h5>
+                <p class="card-text text-muted small mb-3">No description yet.</p>
+                <div class="form-check mt-auto">
+                  <input class="form-check-input" checked="checked" type="checkbox" id="<%= level.id %>" name="selectedLevels[]"
+                    value="<%= level.id %>">
+                  <label class="form-check-label" for="<%= level.id %>">
+                    Select <%= level.name %>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% }); %>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Create game</button>
+  </form>
+</div>
+
+<script src="js/home.js"></script>
