@@ -1,23 +1,28 @@
+// Import dependencies in Node.js environment
+if (typeof require !== 'undefined') {
+    var ReactiveModel = require('./ReactiveModel');
+}
+
 // Check if Message already exists in global scope
 if (typeof window !== 'undefined' && window.Message) {
     // If it exists, use the existing one
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = window.Message;
-    }
+    module.exports = window.Message;
 } else {
-    // Import dependencies in Node.js environment
-    if (typeof require !== 'undefined') {
-        var ReactiveModel = require('./ReactiveModel');
-    }
-
     class Message extends ReactiveModel {
-        constructor(playerId, playerName, message, timestamp = Date.now()) {
-            super({
+        constructor({
+            playerId = null,
+            playerName = null,
+            message = null,
+            timestamp = Date.now()
+        } = {}) {
+            const initialState = {
                 playerId: playerId,
                 playerName: playerName,
                 message: message,
                 timestamp: timestamp
-            });
+            };
+
+            super(initialState);
         }
 
         // Getters
@@ -32,28 +37,18 @@ if (typeof window !== 'undefined' && window.Message) {
         }
 
         toJSON() {
-            return {
-                playerId: this.state.playerId,
-                playerName: this.state.playerName,
-                message: this.state.message,
-                timestamp: this.state.timestamp
-            };
+            return { ...this.state };
         }
 
         static fromJSON(data) {
-            return new Message(
-                data.playerId, 
-                data.playerName, 
-                data.message, 
-                data.timestamp
-            );
+            return new Message(data);
         }
     }
 
     // Make it available to both Node.js and browser
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = Message;
-    } else {
+    } else if (typeof window !== 'undefined') {
         window.Message = Message;
     }
-} 
+}

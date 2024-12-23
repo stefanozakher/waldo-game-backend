@@ -45,7 +45,7 @@ if (typeof window !== 'undefined' && window.PlayerList) {
         }
 
         get currentPlayer() { return this.state.currentPlayer; }
-        get players() { return [...this.state.players]; }
+        get players() { return this.state.players; }
 
         set currentPlayer(player) { this.state.currentPlayer = player; }
         set players(players) { this.state.players = players; }

@@ -1,53 +1,40 @@
 <!-- views/pages/game.ejs -->
-<div class="container-fluid">
-    <div class="sticky-top bg-warning-subtle py-2">
-        <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col-md-4">
-                    <p>Status:
+<div class="container-fluid py-0 ps-0">
+
+    <header class="game-header sticky-top px-3 py-2">
+        <div class="header-content">
+            <div class="game-info">
+                <img src="/favicon/favicon-32x32.png" alt="Icon" class="game-icon" width="40" height="40">
+                <div class="game-title">
+                    <h1>
+                        <span id="game-session-level">Level 1</span>
                         <span id="game-session-status" class="badge 
-                                    <%= gameSession.status === 'waiting' ? 'bg-secondary' :
-                                        gameSession.status === 'playing' ? 'bg-primary' :
-                                        gameSession.status === 'completed' ? 'bg-success' : 'bg-info' %>">
+                                        <%= gameSession.status === 'waiting' ? 'bg-secondary' :
+                                            gameSession.status === 'playing' ? 'bg-primary' :
+                                            gameSession.status === 'completed' ? 'bg-success' : 'bg-info' %>">
                             <%= gameSession.status.charAt(0).toUpperCase() + gameSession.status.slice(1) %>
                         </span>
-                    </p>
-                <% if (gameSession.status !=='completed' ) { %>
-                    <span class="d-inline-block">
-                        <i class="bi bi-clock me-2"></i>Time left:
-                        <span id="game-session-timer" class="font-monospace timer-value">
-                            <% if (gameSession.status==='playing' ) { %>
-                                <% var elapsedSeconds=Math.floor( (gameSession.started_at + (gameSession.playtime_in_seconds * 1000) - Date.now()) / 1000 ); %>
-                                <%= Math.floor(elapsedSeconds / 60) %>:<%= (elapsedSeconds % 60).toString().padStart(2, '0' ) %>
-                            <% } else { %>
-                                <%= Math.floor(gameSession.playtime_in_seconds / 60) %>:<%=(gameSession.playtime_in_seconds % 60).toString().padStart(2, '0' ) %>
-                            <% } %>
-                        </span>
-                    </span>
-                <% } %>
-                </div>
-                <div class="col-md-8 text-md-end">
-                    <button class="btn btn-primary" onclick="copyGameLinkToClipboard()">
-                        <i class="bi bi-share me-2"></i>Share Link
-                    </button>
+                    </h1>
                 </div>
             </div>
+            <div class="game-controls">
+                <div class="timer">
+                    <span id="game-session-timer" class="time-value text-dark bg-white rounded-pill px-3 py-1 font-monospace mr-2"></span>
+                </div>
+                <button class="share-button" onclick="copyGameLinkToClipboard()">
+                    <i class="bi bi-share"></i>
+                    Share Game
+                </button>
+            </div>
         </div>
-    </div>
-    
-    <!-- Playerlist -->
-    <div class="row mb-3">
-        <div class="col-12">
-            
-        </div>
-    </div>
+    </header>
 
     <div class="row g-4">
-        <div class="col-md-8">
+        <div class="col-md-8 align-middle">
             <div id="game-board"></div>
         </div>
-        <div class="col-md-4">
-            <div id="player-list"></div>
+        <div class="col-md-4 align-middle">
+            <div id="player-list" class="my-3"></div>
             <%- include('gameChat.ejs') %>
         </div>
     </div>
@@ -62,6 +49,7 @@
 <script src="/js/PlayerListComponent.js"></script>
 <script src="/js/GameBoardComponent.js"></script>
 <script src="/js/TimerComponent.js"></script>
+<script src="/js/ChatComponent.js"></script>
 <script>
     const gameShortId = '<%= gameSession.shortId %>';
     const gameSessionJSON = <%- JSON.stringify(gameSession) %>;

@@ -78,7 +78,7 @@ class TimerComponent {
                 break;
             case 'completed':
             case 'timeout':
-                this.containerTimer.textContent = 'Completed or timed out';
+                this.containerTimer.textContent = '';
                 break;
         }
         

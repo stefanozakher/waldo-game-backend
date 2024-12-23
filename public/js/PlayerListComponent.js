@@ -33,7 +33,6 @@ class PlayerListComponent {
     }
 
     render(players = null) {
-        console.log('PlayerListComponent: render', players || this.playerList.toJSON() );
         // Compile and render the template
         const template = Handlebars.compile(document.getElementById('template-player-list').innerHTML);
         this.container.innerHTML = template({

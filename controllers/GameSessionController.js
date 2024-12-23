@@ -62,9 +62,6 @@ class GameSessionController {
 
         // Can only start a game session that is 'waiting' to be started
         if (gameSession.start(startedAt)) {
-            // Update all players to playing status
-            this.getPlayerList(gameShortId).updateAllPlayersStatus('playing');
-
             this.startTimer(gameShortId);
 
             return true;

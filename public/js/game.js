@@ -31,20 +31,45 @@ function copyGameLinkToClipboard() {
     navigator.clipboard.writeText(url);
 }
 
+function sendMessage(){
+    const messageText = document.getElementById('chat-message-text').value;
+
+    if (messageText.length < 1) return;
+
+    const message = new Message({
+        playerId: gameSession.playerlist.currentPlayer.playerId,
+        playerName: gameSession.playerlist.currentPlayer.playerName,
+        message: document.getElementById('chat-message-text').value,
+        timestamp: Date.now()
+    });
+
+    gameSession.chat.addMessage(message);
+    
+    socket.emit('chat.message', gameShortId, message.toJSON());
+    
+    document.getElementById('chat-message-text').value = '';
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // Once all elements are loaded, join the game session to receive any updates from hereon.
     socket.emit('player.join', gameShortId, gameSession.playerlist.currentPlayer);
+
+    
+
+    // Initialize game board
+    const gameBoardElement = document.getElementById('game-board');
+    const gameBoardComponent = new GameBoardComponent(gameBoardElement);
+    gameBoardComponent.init(gameSession);
 
     // Initialize player list
     const playerListElement = document.getElementById('player-list');
     const playerListComponent = new PlayerListComponent(playerListElement);
     playerListComponent.init(gameSession.playerlist);
 
-    // Initialize game board
-    const gameBoardElement = document.getElementById('game-board');
-    const gameBoardComponent = new GameBoardComponent(gameBoardElement);
-    gameBoardComponent.init(gameSession);
+    // Initialize chat
+    const chatComponent = new ChatComponent();
+    chatComponent.init(gameSession);
 
     // Initialize timer
     const timerComponent = new TimerComponent();
@@ -56,6 +81,9 @@ document.addEventListener('DOMContentLoaded', function () {
         Reflect.set(gameSession, property, newValue);
     });
 
+    /********************************************
+     * Render the game session status
+     */
     const renderGameSessionStatus = (status) => {
         const gameSessionStatusElement = document.getElementById('game-session-status');
         gameSessionStatusElement.textContent = status;
@@ -73,10 +101,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Chat
-    // socket.on('chatMessage', (data) => {
-    //     console.log('Received chat message:', data);
+    socket.on('chat.message', (data) => {
+        console.log('Received chat message:', data);
     //     clientGameSession.getChat().addMessage(data);
-    // });
+    });
     // socket.emit('loadChatMessages', gameShortId, (messages) => {
     //     console.log('Received chat messages:', messages);
     //     clientGameSession.getChat().loadMessages(messages);

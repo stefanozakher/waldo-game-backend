@@ -97,6 +97,14 @@ class GameSession extends ReactiveModel {
         this.state.status = 'playing';
         this.state.startedAt = startedAt;
         this.state.currentLevelId = this.state.levelsIds[0];
+
+        if (this.playerlist) {
+            this.playerlist.players = this.playerlist.players.map(p => {
+                (p.status === 'ready') ? p.status = 'playing' : p.status;
+                return p;
+            });
+        }
+
         return true;
     }
 

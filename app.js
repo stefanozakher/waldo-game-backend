@@ -63,10 +63,9 @@ io.on('connection', (socket) => {
         const gameSession = gameSessionController.create(data);
         const gameShortId = gameSession.shortId;
 
-        // When the player list changes, emit the new state to all clients in the game
-        gameSession.playerlist.subscribe('players', (newPlayerList) => {
-            io.to(gameShortId).emit('playerlist.updated', newPlayerList);
-        });
+        /**
+         * Subscribe to game session changes
+         */
         // When the game session changes, emit the new state to all clients in the game
         gameSession.subscribe(['status','startedAt','endedAt','currentLevelId'], (property, newValue, oldValue) => {
             console.log('Game session updated', property,'from', oldValue,'to', newValue);
@@ -75,6 +74,21 @@ io.on('connection', (socket) => {
                 newValue: newValue,
                 oldValue: oldValue
             });
+        });
+
+        /**
+         * Subscribe to player list changes
+         */
+        // When the player list changes, emit the new state to all clients in the game
+        gameSession.playerlist.subscribe('players', (newPlayerList) => {
+            io.to(gameShortId).emit('playerlist.updated', newPlayerList);
+        });
+
+        /**
+         * Subscribe to chat changes
+         */
+        gameSession.chat.subscribe('latestMessage', (latestMessage) => {
+            io.to(gameShortId).emit('chat.message', latestMessage.toJSON());
         });
 
         // gameSessionController.storeGameSession(gameSession);
@@ -115,13 +129,13 @@ io.on('connection', (socket) => {
         callback(gameSessionController.getChat(gameShortId).getMessagesInChronologicalOrder());
     });
     // chatMessage
-    socket.on('chatMessage', (gameShortId, messageData) => {
+    socket.on('chat.message', (gameShortId, messageData) => {
+        console.log('Received chat message:', messageData);
         const chat = gameSessionController.getChat(gameShortId);
         try {
             const newMessage = Message.fromJSON(messageData);
-            chat.addMessageFromJSON(newMessage);
-            socket.to(gameShortId).emit('chatMessage', newMessage.toJSON());
-            socket.emit('chatMessage', newMessage.toJSON());
+            chat.addMessage(newMessage);
+            //socket.to(gameShortId).emit('chat.message', newMessage.toJSON());
         } catch (error) {
             console.error('Error processing message:', error);
             console.error('Original message data:', messageData);

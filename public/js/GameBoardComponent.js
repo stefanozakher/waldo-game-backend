@@ -9,6 +9,7 @@ class GameBoardComponent {
         `;
 
         this.unsubscribe = new Set();
+        this.registeredMissedHits = new Array();
     }
 
     get gameSession() { return this._gameSession; }
@@ -41,7 +42,7 @@ class GameBoardComponent {
     setupSubscription() {
         // Subscribe to gameSession changes
         this.unsubscribe.add(this.gameSession.subscribe('status', (newStatus) => {
-            console.log('GameBoardComponent: New game session status', newStatus);
+            console.log('GameBoardComponent: New game session status: ', newStatus);
             this.renderGameBoard();
 
             if (newStatus === 'playing') {
@@ -49,21 +50,19 @@ class GameBoardComponent {
             }
         }));
         this.unsubscribe.add(this.gameSession.subscribe('currentLevelId', (newLevelId) => {
-            console.log('GameBoardComponent: New current level id', newLevelId);
+            console.log('GameBoardComponent: New current level id: ', newLevelId);
             this.renderGameLevel();
         }));
 
         // Setup a hook to start the game, if the game session is still 'waiting'.
-        if (this.gameSession.status === 'waiting') {
-            this.unsubscribePlayers = this.gameSession.playerlist.subscribe('players', (newPlayers) => {
-                console.log('GameBoardComponent: checking if all players are ready.');
-                // Only re-render the game board once all players are ready
-                if (this.gameSession.playerlist.areAllPlayersReady()) {
-                    this.renderGameBoard();
-                    this.unsubscribePlayers();
-                }
-            });
-        }
+        this.unsubscribePlayers = this.gameSession.playerlist.subscribe('players', (newPlayers) => {
+            // Only re-render the game board once all players are ready
+            if (this.gameSession.playerlist.areAllPlayersReady() && this.gameSession.status === 'waiting') {
+                console.log('GameBoardComponent: All players are ready and game session is waiting. Game can start.');
+                this.renderGameBoard();
+                this.unsubscribePlayers();
+            }
+        });
     }
 
     destroy() { this.cleanup(); }
@@ -147,6 +146,7 @@ class GameBoardComponent {
     }
 
     handleImageClick(event) {
+        const timeOfClick = Date.now();
         const gameBoardImage = document.getElementById('game-board-image');
         const rect = gameBoardImage.getBoundingClientRect();
         const displayWidth = rect.width;
@@ -176,6 +176,10 @@ class GameBoardComponent {
                 this.gameSession.nextLevel();
             } else {
                 // Add your miss logic here
+                if (this.registeredMissedHits.length >= 2 && (timeOfClick - this.registeredMissedHits[0]) < 1000) {
+                    return console.log('Missed 3 hits in a row. Game over.');
+                }
+                this.registeredMissedHits.push(timeOfClick);
             }
         } else {
             console.error('No target area defined for current level:', {
