@@ -1,3 +1,16 @@
+// Define some game rules
+const MAX_MISSED_HITS = 3;
+const MISSED_HITS_TIME_THRESHOLD = 5000; // milliseconds
+const MISSED_HIT_MESSAGE_DURATION = 1000; // milliseconds
+const MISSED_HIT_MESSAGES = ['Missed!', 'Try again!', 'Not quite!', 'Still no!', 'Really? Try again!'];
+const HIT_MESSAGE = 'You found him!';
+const HIT_MESSAGE_DURATION = 1000; // milliseconds
+
+// Penalty
+var isPenaltyActive = false; // Whether the penalty is active
+const PENALTY_TIME = 10000; // milliseconds
+const PENALTY_MESSAGE = `Missed too many times! ${PENALTY_TIME / 1000} seconds wait.`;
+
 class GameBoardComponent {
     constructor(containerGameBoard = null, containerGameLevel = null) {
         this._containerGameBoard = containerGameBoard || document.getElementById('game-board');
@@ -146,6 +159,10 @@ class GameBoardComponent {
     }
 
     handleImageClick(event) {
+        if (isPenaltyActive) {
+            return;
+        }
+
         const timeOfClick = Date.now();
         const gameBoardImage = document.getElementById('game-board-image');
         const rect = gameBoardImage.getBoundingClientRect();
@@ -159,8 +176,10 @@ class GameBoardComponent {
         const scaleY = naturalHeight / displayHeight;
 
         // Get click coordinates relative to displayed image
-        const displayX = event.clientX - rect.left;
-        const displayY = event.clientY - rect.top;
+        const clickX = event.clientX;
+        const clickY = event.clientY;
+        const displayX = clickX - rect.left;
+        const displayY = clickY - rect.top;
 
         // Convert to coordinates relative to original image dimensions
         const x = displayX * scaleX;
@@ -173,13 +192,11 @@ class GameBoardComponent {
 
             if (x >= xMin && x <= xMax && y >= yMin && y <= yMax) {
                 // Add your success logic here
+                showClickMessage(clickX, clickY, HIT_MESSAGE, HIT_MESSAGE_DURATION);
                 this.gameSession.nextLevel();
             } else {
                 // Add your miss logic here
-                if (this.registeredMissedHits.length >= 2 && (timeOfClick - this.registeredMissedHits[0]) < 1000) {
-                    return console.log('Missed 3 hits in a row. Game over.');
-                }
-                this.registeredMissedHits.push(timeOfClick);
+                this.handleMissedHit(event, timeOfClick);
             }
         } else {
             console.error('No target area defined for current level:', {
@@ -188,6 +205,26 @@ class GameBoardComponent {
                 hasTargetArea: !!(currentLevel && currentLevel.targetArea)
             });
         }
+    }
+
+    handleMissedHit(event, timeOfClick) {
+        if (this.registeredMissedHits.length >= MAX_MISSED_HITS) {
+            if ((timeOfClick - this.registeredMissedHits[0]) < MISSED_HITS_TIME_THRESHOLD) {
+                // Penalty is active
+                if (!isPenaltyActive) {
+                    isPenaltyActive = true;
+                    showClickMessage(event.clientX, event.clientY, PENALTY_MESSAGE, PENALTY_TIME);
+                    setTimeout(() => {
+                        isPenaltyActive = false;
+                    }, PENALTY_TIME);
+                }
+            }
+            this.registeredMissedHits.shift();
+        } else {
+            this.registeredMissedHits.push(timeOfClick);            
+        }
+
+        showClickMessage(event.clientX, event.clientY, MISSED_HIT_MESSAGES[Math.floor(Math.random() * MISSED_HIT_MESSAGES.length)], MISSED_HIT_MESSAGE_DURATION);
     }
 
     renderGameLevel(gameSession){

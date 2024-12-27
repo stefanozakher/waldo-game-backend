@@ -48,6 +48,33 @@ function sendMessage(){
     document.getElementById('chat-message-text').value = '';
 }
 
+function showClickMessage(x, y, message, duration = 1000) {
+    // Create message element
+    const messageEl = document.createElement('div');
+    messageEl.className = 'click-message';
+    messageEl.textContent = message;
+    
+    // Position near click
+    messageEl.style.left = `${x}px`;
+    messageEl.style.top = `${y}px`;
+    
+    // Add to DOM
+    document.body.appendChild(messageEl);
+    
+    // Trigger show animation
+    requestAnimationFrame(() => {
+        messageEl.classList.add('show');
+    });
+    
+    // Remove after delay
+    setTimeout(() => {
+        messageEl.classList.add('hide');
+        setTimeout(() => {
+            messageEl.remove();
+        }, duration); // Match animation duration
+    }, duration);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // Once all elements are loaded, join the game session to receive any updates from hereon.
