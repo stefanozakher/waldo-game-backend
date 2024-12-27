@@ -1,10 +1,45 @@
 /* public/css/styles.css */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+/* Reset basic elements */
+html, body {
     margin: 0;
     padding: 0;
     height: 100vh;
+    width: 100vw;
+}
+
+/* Container adjustments */
+.container-fluid {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+/* Game board area */
+#game-board {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ensure chat messages don't overflow */
+.chat-messages {
+    overflow-y: auto;
+    max-height: 30vh;
+}
+
+/* Adjust overlay to fit within game board */
+#overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(113, 183, 102, 0.5);
+    z-index: 1000;
 }
 
 .game-container {
@@ -72,6 +107,8 @@ body {
     justify-content: center;
     overflow: hidden;
     position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 .header-content {
@@ -181,16 +218,6 @@ body {
 
 .min-width-0 {
     min-width: 0;
-}
-
-#overlay {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background: rgba(113, 183, 102, 0.5);
-    z-index: 1000;
 }
 
 /* Chat positioning */

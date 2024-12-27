@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const gameSessionLevelElement = document.getElementById('game-session-level');
         gameSessionLevelElement.textContent = levelTitle;
     }
+    renderGameSessionLevel(gameSession.getCurrentLevel().title);
     gameSession.subscribe('currentLevelId', () => {
         renderGameSessionLevel(gameSession.getCurrentLevel().title);
     });
