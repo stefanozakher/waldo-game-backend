@@ -2,6 +2,39 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+}
+
+.game-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-bar {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px 20px;
+    z-index: 1000;
+}
+
+.level-timer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.timer {
+    background-color: #007bff;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
 }
 
 .sticky-top {
@@ -34,20 +67,6 @@ body {
     position: relative;
 }
 
-.game-header {
-    position: sticky;
-    top: 0;
-    background-color: #000000;
-    color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem 1.5rem;
-} */
-
 .header-content {
     display: flex;
     flex-direction: column;
@@ -59,53 +78,6 @@ body {
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
-}
-
-.game-icon {
-    margin-right: 1rem;
-}
-
-.game-title h1 {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0;
-}
-
-.current-level {
-    font-size: 0.875rem;
-    opacity: 0.8;
-    margin: 0;
-}
-
-.game-controls {
-    display: flex;
-    align-items: center;
-}
-
-.timer {
-    display: flex;
-    align-items: center;
-    margin-right: 1.5rem;
-}
-
-.share-button {
-    background-color: white;
-    color: #2563eb;
-    border: none;
-    border-radius: 0.25rem;
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.share-button:hover {
-    background-color: #f0f9ff;
-}
-
-.share-button i {
-    margin-right: 0.5rem;
 }
 
 @media (min-width: 768px) {
@@ -154,7 +126,6 @@ body {
     color: #666;
 }
 
-
 .player-list-card {
     margin: 0 auto;
 }
@@ -171,4 +142,14 @@ body {
 
 .min-width-0 {
     min-width: 0;
+}
+
+#overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(113, 183, 102, 0.5);
+    z-index: 1000;
 }

@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
     /********************************************
      * Render the game session status and level
      */
-    const renderGameSessionStatus = (status) => {
+    /*const renderGameSessionStatus = (status) => {
         const gameSessionStatusElement = document.getElementById('game-session-status');
         gameSessionStatusElement.textContent = status;
         gameSessionStatusElement.className = 'badge ' +
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
     renderGameSessionStatus(gameSession.status);
     gameSession.subscribe('status',(newStatus) => {
         renderGameSessionStatus(newStatus)
-    });
+    });*/
 
     const renderGameSessionLevel = (levelTitle) => {
         const gameSessionLevelElement = document.getElementById('game-session-level');
