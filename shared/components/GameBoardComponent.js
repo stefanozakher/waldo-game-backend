@@ -192,8 +192,7 @@ class GameBoardComponent {
 
             if (x >= xMin && x <= xMax && y >= yMin && y <= yMax) {
                 // Add your success logic here
-                showClickMessage(clickX, clickY, HIT_MESSAGE, HIT_MESSAGE_DURATION);
-                this.gameSession.nextLevel();
+                this.handleHit(event, timeOfClick);
             } else {
                 // Add your miss logic here
                 this.handleMissedHit(event, timeOfClick);
@@ -205,6 +204,15 @@ class GameBoardComponent {
                 hasTargetArea: !!(currentLevel && currentLevel.targetArea)
             });
         }
+    }
+
+    handleHit(event, timeOfClick) {
+        showClickMessage(event.clientX, event.clientY, HIT_MESSAGE, HIT_MESSAGE_DURATION);
+        sendSystemMessage(new Message({
+            message: `${this.gameSession.playerlist.currentPlayer.playerName} found him in level ${this.gameSession.getCurrentLevel().title}!`,
+            timestamp: timeOfClick
+        }));
+        this.gameSession.nextLevel();
     }
 
     handleMissedHit(event, timeOfClick) {

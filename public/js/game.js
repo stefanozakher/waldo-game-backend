@@ -48,6 +48,10 @@ function sendMessage(){
     document.getElementById('chat-message-text').value = '';
 }
 
+function sendSystemMessage(message) {
+    socket.emit('chat.message', gameShortId, message);
+}
+
 function showClickMessage(x, y, message, duration = 1000) {
     // Create message element
     const messageEl = document.createElement('div');
