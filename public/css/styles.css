@@ -23,12 +23,16 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
 /* Ensure chat messages don't overflow */
 .chat-messages {
     overflow-y: auto;
     max-height: 30vh;
+    font-size: 0.9rem;
+    line-height: 1.2;
 }
 
 /* Adjust overlay to fit within game board */
@@ -83,32 +87,6 @@ html, body {
     position: sticky;
     top: 0;
     z-index: 1000;
-}
-
-.chat-messages {
-    overflow-y: auto;
-    font-size: 0.9rem;
-    line-height: 1.2;
-    max-height: 300px;
-}
-
-#game-board {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-}
-
-#game-level {
-    cursor: grab;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-    height: 100%;
 }
 
 .header-content {
@@ -378,6 +356,9 @@ html, body {
 
 /* Mobile adjustments for chat and player list */
 @media (max-width: 768px) {
+    #chat .card, #player-list .card {
+        border: none;
+    }
     /* Base styles for cards */
     .chat-card,
     .player-list-card {

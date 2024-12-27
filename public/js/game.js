@@ -152,3 +152,20 @@ document.addEventListener('DOMContentLoaded', function () {
     if (gameSession.status === 'playing')
         socket.emit('player.status', gameShortId, gameSession.playerlist.currentPlayer.playerId, 'playing');
 });
+
+
+function toggleChat() {
+    bootstrap.Collapse.getOrCreateInstance('#gameSessionChatBody').toggle();
+
+    if (document.getElementById('playerListContent').classList.contains('show')) {
+        bootstrap.Collapse.getOrCreateInstance('#playerListContent').hide();
+    }
+}
+
+function togglePlayerList() {
+    bootstrap.Collapse.getOrCreateInstance('#playerListContent').toggle();
+
+    if (document.getElementById('gameSessionChatBody').classList.contains('show')) {
+        bootstrap.Collapse.getOrCreateInstance('#gameSessionChatBody').hide();
+    }
+}
