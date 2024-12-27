@@ -19,6 +19,13 @@ body {
     z-index: 1000;
 }
 
+.bottom-bar {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px 20px;
+    margin-top: auto;
+    z-index: 1000;
+}
+
 .level-timer {
     display: flex;
     align-items: center;
@@ -127,7 +134,39 @@ body {
 }
 
 .player-list-card {
-    margin: 0 auto;
+    position: fixed;
+    bottom: 60px; /* Adjust based on your bottom-bar height */
+    left: 20px;
+    max-width: 400px; /* Optional: limit width */
+    width: 100%;
+    z-index: 999; /* Below the top/bottom bars */
+    background-color: rgba(255, 255, 255, 1.0);
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .player-list-card {
+        max-width: calc(100% - 40px); /* Full width minus margins */
+        left: 20px;
+        right: 20px;
+    }
+}
+
+/* Optional: Animation for showing/hiding */
+.player-list-card.collapse {
+    transition: transform 0.3s ease-in-out;
+}
+
+.player-list-card.collapse:not(.show) {
+    transform: translateY(100%);
+    display: block;
+}
+
+.player-list-card.collapsing {
+    transform: translateY(0%);
+    transition: transform 0.3s ease-in-out;
 }
 
 .hover-bg-light:hover {
@@ -152,4 +191,55 @@ body {
     left: 0;
     background: rgba(113, 183, 102, 0.5);
     z-index: 1000;
+}
+
+/* Chat positioning */
+.chat-card {
+    position: fixed;
+    bottom: 60px; /* Same as player-list to align them */
+    right: 20px;
+    max-width: 400px;
+    width: 100%;
+    z-index: 999;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments for chat */
+@media (max-width: 768px) {
+    .chat-card {
+        max-width: calc(100% - 40px);
+        right: 20px;
+    }
+}
+
+/* Animation for showing/hiding chat */
+.chat-card.collapse {
+    transition: transform 0.3s ease-in-out;
+}
+
+.chat-card.collapse:not(.show) {
+    transform: translateY(100%);
+    display: block;
+}
+
+.chat-card.collapsing {
+    transform: translateY(0%);
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Chevron rotation for collapse states */
+.bi-chevron-down {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Rotate chevron when collapsed */
+.collapsed .bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+/* Optional: Add a transition delay to match collapse animation */
+.collapsing .bi-chevron-down {
+    transition-delay: 0.1s;
 }
