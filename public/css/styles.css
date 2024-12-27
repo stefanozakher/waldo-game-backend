@@ -306,3 +306,121 @@ html, body {
 .click-message.hide {
     animation: fadeOutUp 0.3s ease-out forwards;
 }
+
+/* Mobile icons for chat and player list */
+@media (max-width: 768px) {
+    /* Icon buttons */
+    .chat-toggle-btn,
+    .player-list-toggle-btn {
+        position: fixed;
+        bottom: 20px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        border: none;
+    }
+
+    .chat-toggle-btn {
+        right: 20px;
+    }
+
+    .player-list-toggle-btn {
+        left: 20px;
+    }
+
+    /* Cards positioning */
+    .chat-card,
+    .player-list-card {
+        position: fixed;
+        bottom: 80px; /* Above the toggle buttons */
+        max-width: calc(100% - 40px);
+        width: 100%;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        z-index: 999;
+    }
+
+    .chat-card {
+        right: 20px;
+    }
+
+    .player-list-card {
+        left: 20px;
+    }
+
+    /* Collapse animations */
+    .chat-card.collapse:not(.show),
+    .player-list-card.collapse:not(.show) {
+        display: none;
+    }
+
+    .chat-card.collapsing,
+    .player-list-card.collapsing {
+        height: 0;
+        overflow: hidden;
+        transition: height 0.35s ease;
+    }
+
+    /* Optional: Add active state for buttons */
+    .chat-toggle-btn.active,
+    .player-list-toggle-btn.active {
+        background: #007bff;
+        color: white;
+    }
+}
+
+/* Mobile adjustments for chat and player list */
+@media (max-width: 768px) {
+    /* Base styles for cards */
+    .chat-card,
+    .player-list-card {
+        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        transform-origin: bottom;
+    }
+
+    /* Hide the collapsed cards completely on mobile */
+    .chat-card.collapse:not(.show),
+    .player-list-card.collapse:not(.show) {
+        display: block !important; /* Need this for animation */
+        transform: translateY(100%);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Animation states for collapsing/expanding */
+    .chat-card.collapsing,
+    .player-list-card.collapsing {
+        transform: translateY(0%);
+        opacity: 1;
+        height: auto !important; /* Override Bootstrap's height animation */
+        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    }
+
+    /* Shown state */
+    .chat-card.show,
+    .player-list-card.show {
+        transform: translateY(0);
+        opacity: 1;
+        display: block !important;
+        visibility: visible;
+    }
+
+    /* Hide header collapse buttons */
+    .chat-card .card-header [data-bs-toggle="collapse"],
+    .player-list-card .card-header [data-bs-toggle="collapse"] {
+        display: none;
+    }
+
+    /* Show toggle buttons */
+    .chat-toggle-btn,
+    .player-list-toggle-btn {
+        display: flex !important;
+    }
+}
