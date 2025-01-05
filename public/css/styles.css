@@ -23,8 +23,19 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+#game-level {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
     width: 100%;
     height: 100%;
+    top: 0;
+    left: 0;
 }
 
 /* Ensure chat messages don't overflow */
@@ -155,7 +166,7 @@ html, body {
     max-width: 400px; /* Optional: limit width */
     width: 100%;
     z-index: 999; /* Below the top/bottom bars */
-    background-color: rgba(255, 255, 255, 1.0);
+    background-color: rgba(255, 255, 255, 0.8); /* 50% transparency */
     border-radius: 0.25rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -206,7 +217,7 @@ html, body {
     max-width: 400px;
     width: 100%;
     z-index: 999;
-    background-color: rgba(255, 255, 255, 1.0);
+    background-color: rgba(255, 255, 255, 0.8); /* 50% transparency */
     border-radius: 0.25rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -319,7 +330,7 @@ html, body {
         bottom: 80px; /* Above the toggle buttons */
         max-width: calc(100% - 40px);
         width: 100%;
-        background: white;
+        background: rgba(255, 255, 255, 0.8); /* 50% transparency */
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         z-index: 999;
