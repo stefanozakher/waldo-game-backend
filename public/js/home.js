@@ -8,6 +8,18 @@ const getSelectedLevelsIds = () => {
 
     return levelsIds;
 };
+
+document.addEventListener('DOMContentLoaded', function () {
+    const levelCards = document.querySelectorAll('.level-card');
+
+    levelCards.forEach(card => {
+        card.addEventListener('click', function () {
+            const checkbox = card.querySelector('.form-check-input');
+            checkbox.checked = !checkbox.checked;
+        });
+    });
+});
+
 document.getElementById('gameForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const seconds = document.getElementById('seconds').value;
