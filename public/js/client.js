@@ -1,5 +1,9 @@
 const socket = io();
 
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
 socket.on('connect', () => {
     console.log('Connected to server');
 });

@@ -143,6 +143,7 @@ class GameBoardComponent {
 
             // For mobile devices
             let lastTap = 0;
+            let timeout = null;
             gameBoardImage.addEventListener('touchend', (event) => {
                 const currentTime = new Date().getTime();
                 const tapLength = currentTime - lastTap;
@@ -152,9 +153,13 @@ class GameBoardComponent {
                     const touch = event.changedTouches[0];
                     this.handleImageClick(touch);
                     event.preventDefault(); // Prevent zoom/double-tap gestures
+                } else {
+                    timeout = setTimeout(() => {
+                        clearTimeout(timeout);
+                    }, 500);
                 }
                 lastTap = currentTime;
-            });
+            }, { passive: false });
         }
     }
 
