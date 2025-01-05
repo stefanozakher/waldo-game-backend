@@ -15,15 +15,13 @@ const gameLevels = [
         id: 'lgFlS92wZ4Zd',
         title: 'Level 2',
         imageUrl: '/images/levels/waldo2.jpg',
-        imageWidth: 1500,
-        imageHeight: 937,
-        // x: 406 -> 440
+        imageWidth: 3000,
+        imageHeight: 1874,
         targetArea: {
-            xMin: 406,
-            xMax: 440,
-            // y: 324 -> 360
-            yMin: 324,
-            yMax: 360
+            xMin: 812,
+            xMax: 880,
+            yMin: 648,
+            yMax: 720
         }
     },
     {
