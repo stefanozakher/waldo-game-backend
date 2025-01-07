@@ -134,36 +134,48 @@ class GameBoardComponent {
         });
     }
 
-    setupDoubleClickEvent() {
+    setupGuessingWaldoEvent() {
         const gameBoardImage = document.getElementById('game-board-image');
 
         if (gameBoardImage) {
             // For desktop
-            gameBoardImage.addEventListener('dblclick', (event) => this.handleImageClick(event));
+            gameBoardImage.addEventListener('dblclick', (event) => this.guessWaldo(event));
 
             // For mobile devices
-            let lastTap = 0;
-            let timeout = null;
-            gameBoardImage.addEventListener('touchend', (event) => {
-                const currentTime = new Date().getTime();
-                const tapLength = currentTime - lastTap;
-                
-                if (tapLength < 500 && tapLength > 0) {
-                    // Convert touch event to equivalent mouse event coordinates
-                    const touch = event.changedTouches[0];
-                    this.handleImageClick(touch);
-                    event.preventDefault(); // Prevent zoom/double-tap gestures
-                } else {
-                    timeout = setTimeout(() => {
-                        clearTimeout(timeout);
-                    }, 500);
+            let previousTouchEvent = '';
+            let previousTouchEventTime = 0;
+            let doubleTapEvent = false;
+            gameBoardImage.addEventListener('touchmove', (event) => {
+                previousTouchEvent = "";
+                previousTouchEventTime = 0;
+                doubleTapEvent = false;
+            });
+            gameBoardImage.addEventListener('touchcancel', (event) => {
+                previousTouchEvent = "";
+                previousTouchEventTime = 0;
+                doubleTapEvent = false;
+            });
+            gameBoardImage.addEventListener('touchstart', (event) => {
+                const now = new Date().getTime();
+                if (previousTouchEvent === "touchend" && previousTouchEventTime > now - 300) {
+                    doubleTapEvent = true;
                 }
-                lastTap = currentTime;
+                previousTouchEvent = "touchstart";
+                previousTouchEventTime = now;
+            });
+            gameBoardImage.addEventListener('touchend', (event) => {
+                if (previousTouchEvent === "touchstart" && doubleTapEvent) {
+                    // End of a double tap
+                    this.guessWaldo(event.changedTouches[0]);
+                }
+                previousTouchEvent = "touchend";
+                previousTouchEventTime = new Date().getTime();
+                doubleTapEvent = false;
             }, { passive: false });
         }
     }
 
-    handleImageClick(event) {
+    guessWaldo(event) {
         if (isPenaltyActive) {
             return;
         }
@@ -191,16 +203,16 @@ class GameBoardComponent {
         const y = displayY * scaleY;
 
         const currentLevel = this.gameSession.getCurrentLevel();
-
+        
         if (currentLevel && currentLevel.targetArea) {
             const { xMin, xMax, yMin, yMax } = currentLevel.targetArea;
 
             if (x >= xMin && x <= xMax && y >= yMin && y <= yMax) {
                 // Add your success logic here
-                this.handleHit(event, timeOfClick);
+                this.guessSuccessful(event, timeOfClick);
             } else {
                 // Add your miss logic here
-                this.handleMissedHit(event, timeOfClick);
+                this.guessUnsuccessful(event, timeOfClick);
             }
         } else {
             console.error('No target area defined for current level:', {
@@ -211,7 +223,7 @@ class GameBoardComponent {
         }
     }
 
-    handleHit(event, timeOfClick) {
+    guessSuccessful(event, timeOfClick) {
         showClickMessage(event.clientX, event.clientY, HIT_MESSAGE, HIT_MESSAGE_DURATION);
         sendSystemMessage(new Message({
             message: `${this.gameSession.playerlist.currentPlayer.playerName} found him in level ${this.gameSession.getCurrentLevel().title}!`,
@@ -220,7 +232,7 @@ class GameBoardComponent {
         this.gameSession.nextLevel();
     }
 
-    handleMissedHit(event, timeOfClick) {
+    guessUnsuccessful(event, timeOfClick) {
         if (this.registeredMissedHits.length >= MAX_MISSED_HITS) {
             if ((timeOfClick - this.registeredMissedHits[0]) < MISSED_HITS_TIME_THRESHOLD) {
                 // Penalty is active
@@ -255,6 +267,6 @@ class GameBoardComponent {
         });
 
         this.setupGameBoardZoom();
-        this.setupDoubleClickEvent();
+        this.setupGuessingWaldoEvent();
     }
 }
