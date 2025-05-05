@@ -39,7 +39,7 @@ function sendMessage(){
     const message = new Message({
         playerId: gameSession.playerlist.currentPlayer.playerId,
         playerName: gameSession.playerlist.currentPlayer.playerName,
-        message: document.getElementById('chat-message-text').value,
+        message: messageText,
         timestamp: Date.now()
     });
     
@@ -88,6 +88,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const gameBoardElement = document.getElementById('game-board');
     const gameBoardComponent = new GameBoardComponent(gameBoardElement);
     gameBoardComponent.init(gameSession);
+
+    gameBoardComponent.renderOverlayMessage("Waiting for other players to join...");
 
     // Initialize player list
     const playerListElement = document.getElementById('player-list');
@@ -152,20 +154,3 @@ document.addEventListener('DOMContentLoaded', function () {
     if (gameSession.status === 'playing')
         socket.emit('player.status', gameShortId, gameSession.playerlist.currentPlayer.playerId, 'playing');
 });
-
-
-function toggleChat() {
-    bootstrap.Collapse.getOrCreateInstance('#gameSessionChatBody').toggle();
-
-    if (document.getElementById('playerListContent').classList.contains('show')) {
-        bootstrap.Collapse.getOrCreateInstance('#playerListContent').hide();
-    }
-}
-
-function togglePlayerList() {
-    bootstrap.Collapse.getOrCreateInstance('#playerListContent').toggle();
-
-    if (document.getElementById('gameSessionChatBody').classList.contains('show')) {
-        bootstrap.Collapse.getOrCreateInstance('#gameSessionChatBody').hide();
-    }
-}

@@ -8,7 +8,7 @@ if (typeof require !== 'undefined') {
 
 // Configure shortid in Node.js environment
 if (typeof shortid !== 'undefined') {
-    shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_');
+    shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 }
 
 class GameSession extends ReactiveModel {

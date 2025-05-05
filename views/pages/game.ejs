@@ -26,39 +26,29 @@
     <div id="game-board"></div>
 
     <!-- Toggle buttons for mobile -->
-    <button class="chat-toggle-btn d-md-none" onclick="toggleChat()">
+    <button class="chat-toggle-btn" onclick="$('#chat').collapse('toggle');">
         <i class="bi bi-chat-dots"></i>
     </button>
-    <button class="player-list-toggle-btn d-md-none" onclick="togglePlayerList()">
+    <button class="player-list-toggle-btn" onclick="$('#player-list').collapse('toggle');">
         <i class="bi bi-people"></i>
     </button>
 
     <!-- Player List -->
-    <div id="player-list"></div>
+    <div id="player-list" class="collapse"></div>
 
     <!-- Chat -->
-    <div id="chat">
-        <div class="card chat-card">
-            <div class="card-header d-md-block d-none">
-                <button class="btn btn-link w-100 text-left d-flex justify-content-between align-items-center"
-                    type="button" data-bs-toggle="collapse" data-bs-target="#gameSessionChatBody" aria-expanded="true"
-                    aria-controls="gameSessionChatBody">
-                    Chat
-                    <i class="bi bi-chevron-down"></i>
-                </button>
-            </div>
-            <div id="gameSessionChatBody" class="collapse show">
-                <div class="card-body d-flex flex-column">
-                    <div id="game-session-chat-messages" class="chat-messages mb-3">
-                        <!-- Chat messages will be populated here -->
-                    </div>
-                    <div class="input-group">
-                        <input id="chat-message-text" class="form-control" type="text"
-                            placeholder="Type your message..." onkeypress="if(event.key === 'Enter') sendMessage()">
-                        <button id="chat-send-message" class="btn btn-primary" type="button" onclick="sendMessage()">
-                            <i class="bi bi-send"></i>
-                        </button>
-                    </div>
+    <div id="chat" class="collapse">
+        <div class="card">
+            <div class="card-body d-flex flex-column">
+                <div id="game-session-chat-messages" class="chat-messages mb-3">
+                    <!-- Chat messages will be populated here -->
+                </div>
+                <div class="input-group">
+                    <input id="chat-message-text" class="form-control" type="text" placeholder="Type your message..."
+                        onkeypress="if(event.key === 'Enter') sendMessage()">
+                    <button id="chat-send-message" class="btn btn-primary" type="button" onclick="sendMessage()">
+                        <i class="bi bi-send"></i>
+                    </button>
                 </div>
             </div>
         </div>

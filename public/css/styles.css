@@ -1,13 +1,11 @@
-/* public/css/styles.css */
-/* Reset basic elements */
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     height: 100vh;
     width: 100vw;
 }
 
-/* Container adjustments */
 .container-fluid {
     height: 100vh;
     display: flex;
@@ -15,7 +13,12 @@ html, body {
     padding: 0;
 }
 
-/* Game board area */
+.game-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
 #game-board {
     flex: 1;
     position: relative;
@@ -38,7 +41,23 @@ html, body {
     left: 0;
 }
 
-/* Ensure chat messages don't overflow */
+#overlay {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+#overlay.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
 .chat-messages {
     overflow-y: auto;
     max-height: 30vh;
@@ -46,373 +65,91 @@ html, body {
     line-height: 1.2;
 }
 
-/* Adjust overlay to fit within game board */
-#overlay {
-    position: absolute;
+#chat,
+#player-list {
+    position: fixed;
+    bottom: 70px;
+    max-width: 400px;
     width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background: rgba(113, 183, 102, 0.5);
-    z-index: 1000;
+    z-index: 999;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.game-container {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+#chat {
+    right: 20px;
 }
 
-.top-bar {
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 10px 20px;
-    z-index: 1000;
+#player-list {
+    left: 20px;
 }
 
-.bottom-bar {
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 10px 20px;
-    margin-top: auto;
-    z-index: 1000;
-}
-
-.level-timer {
+.chat-toggle-btn,
+.player-list-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    z-index: 1000;
+    border: none;
 }
 
-.timer {
-    background-color: #007bff;
+.chat-toggle-btn {
+    right: 20px;
+}
+
+.player-list-toggle-btn {
+    left: 20px;
+}
+
+.chat-toggle-btn.active,
+.player-list-toggle-btn.active {
+    background: #007bff;
     color: white;
-    padding: 2px 8px;
-    border-radius: 4px;
 }
 
-.action-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.sticky-top {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.header-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.game-info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-@media (min-width: 768px) {
-    .header-content {
-        flex-direction: row;
-    }
-
-    .game-info {
-        margin-bottom: 0;
-    }
-}
-
-/* Status-based background colors */
 .status-connected {
     background-color: #0066ff;
-    /* Bootstrap primary light */
     border-color: #b6d4fe;
     color: #000;
 }
 
 .status-disconnected {
     background-color: #ff0015;
-    /* Bootstrap danger light */
     border-color: #f5c2c7;
     color: #999;
 }
 
 .status-ready {
     background-color: #6fad7d;
-    /* Bootstrap success light */
     border-color: #badbcc;
     color: #000;
 }
 
 .status-playing {
     background-color: #00ff0d;
-    /* Bootstrap info light */
     border-color: #b6effb;
     color: #000;
 }
 
 .status-unknown {
     background-color: #e2e3e5;
-    /* Bootstrap secondary light */
     border-color: #d3d6d8;
     color: #666;
 }
 
-.player-list-card {
-    position: fixed;
-    bottom: 60px; /* Adjust based on your bottom-bar height */
-    left: 20px;
-    max-width: 400px; /* Optional: limit width */
-    width: 100%;
-    z-index: 999; /* Below the top/bottom bars */
-    background-color: rgba(255, 255, 255, 0.8); /* 50% transparency */
-    border-radius: 0.25rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .player-list-card {
-        max-width: calc(100% - 40px); /* Full width minus margins */
-        left: 20px;
-        right: 20px;
-    }
-}
-
-/* Optional: Animation for showing/hiding */
-.player-list-card.collapse {
-    transition: transform 0.3s ease-in-out;
-}
-
-.player-list-card.collapse:not(.show) {
-    transform: translateY(100%);
-    display: block;
-}
-
-.player-list-card.collapsing {
-    transform: translateY(0%);
-    transition: transform 0.3s ease-in-out;
-}
-
-.hover-bg-light:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-.status-indicator {
-    width: 10px;
-    height: 10px;
-    border: 2px solid white;
-}
-
-.min-width-0 {
-    min-width: 0;
-}
-
-/* Chat positioning */
-.chat-card {
-    position: fixed;
-    bottom: 60px; /* Same as player-list to align them */
-    right: 20px;
-    max-width: 400px;
-    width: 100%;
-    z-index: 999;
-    background-color: rgba(255, 255, 255, 0.8); /* 50% transparency */
-    border-radius: 0.25rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsive adjustments for chat */
-@media (max-width: 768px) {
-    .chat-card {
-        max-width: calc(100% - 40px);
-        right: 20px;
-    }
-}
-
-/* Animation for showing/hiding chat */
-.chat-card.collapse {
-    transition: transform 0.3s ease-in-out;
-}
-
-.chat-card.collapse:not(.show) {
-    transform: translateY(100%);
-    display: block;
-}
-
-.chat-card.collapsing {
-    transform: translateY(0%);
-    transition: transform 0.3s ease-in-out;
-}
-
-/* Chevron rotation for collapse states */
-.bi-chevron-down {
-    transition: transform 0.3s ease-in-out;
-}
-
-/* Rotate chevron when collapsed */
-.collapsed .bi-chevron-down {
-    transform: rotate(180deg);
-}
-
-/* Optional: Add a transition delay to match collapse animation */
-.collapsing .bi-chevron-down {
-    transition-delay: 0.1s;
-}
-
-/* Click message popup */
-.click-message {
-    position: fixed;
-    padding: 8px 16px;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    border-radius: 4px;
-    font-size: 14px;
-    pointer-events: none;
-    z-index: 1100;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.3s, transform 0.3s;
-}
-
-.click-message.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Animation for fading out */
-@keyframes fadeOutUp {
+@keyframes fadeOut {
     from {
         opacity: 1;
-        transform: translateY(0);
     }
+
     to {
         opacity: 0;
-        transform: translateY(-20px);
-    }
-}
-
-.click-message.hide {
-    animation: fadeOutUp 0.3s ease-out forwards;
-}
-
-/* Mobile icons for chat and player list */
-@media (max-width: 768px) {
-    /* Icon buttons */
-    .chat-toggle-btn,
-    .player-list-toggle-btn {
-        position: fixed;
-        bottom: 20px;
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background: white;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        border: none;
-    }
-
-    .chat-toggle-btn {
-        right: 20px;
-    }
-
-    .player-list-toggle-btn {
-        left: 20px;
-    }
-
-    /* Cards positioning */
-    .chat-card,
-    .player-list-card {
-        position: fixed;
-        bottom: 80px; /* Above the toggle buttons */
-        max-width: calc(100% - 40px);
-        width: 100%;
-        background: rgba(255, 255, 255, 0.8); /* 50% transparency */
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        z-index: 999;
-    }
-
-    .chat-card {
-        right: 20px;
-    }
-
-    .player-list-card {
-        left: 20px;
-    }
-
-    /* Collapse animations */
-    .chat-card.collapse:not(.show),
-    .player-list-card.collapse:not(.show) {
-        display: none;
-    }
-
-    .chat-card.collapsing,
-    .player-list-card.collapsing {
-        height: 0;
-        overflow: hidden;
-        transition: height 0.35s ease;
-    }
-
-    /* Optional: Add active state for buttons */
-    .chat-toggle-btn.active,
-    .player-list-toggle-btn.active {
-        background: #007bff;
-        color: white;
-    }
-}
-
-/* Mobile adjustments for chat and player list */
-@media (max-width: 768px) {
-    #chat .card, #player-list .card {
-        border: none;
-    }
-    /* Base styles for cards */
-    .chat-card,
-    .player-list-card {
-        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-        transform-origin: bottom;
-    }
-
-    /* Hide the collapsed cards completely on mobile */
-    .chat-card.collapse:not(.show),
-    .player-list-card.collapse:not(.show) {
-        display: block !important; /* Need this for animation */
-        transform: translateY(100%);
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    /* Animation states for collapsing/expanding */
-    .chat-card.collapsing,
-    .player-list-card.collapsing {
-        transform: translateY(0%);
-        opacity: 1;
-        height: auto !important; /* Override Bootstrap's height animation */
-        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    }
-
-    /* Shown state */
-    .chat-card.show,
-    .player-list-card.show {
-        transform: translateY(0);
-        opacity: 1;
-        display: block !important;
-        visibility: visible;
-    }
-
-    /* Hide header collapse buttons */
-    .chat-card .card-header [data-bs-toggle="collapse"],
-    .player-list-card .card-header [data-bs-toggle="collapse"] {
-        display: none;
-    }
-
-    /* Show toggle buttons */
-    .chat-toggle-btn,
-    .player-list-toggle-btn {
-        display: flex !important;
     }
 }

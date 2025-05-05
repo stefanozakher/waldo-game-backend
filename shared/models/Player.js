@@ -6,7 +6,15 @@ if (typeof window !== 'undefined' && window.Player) {
     }
 } else {
     class Player {
-        constructor(playerId, playerName, status = 'connected', socketId = null) {
+        constructor({
+            playerId,
+            playerName,
+            status = 'connected',
+            level = 0,
+            points = 0,
+            socketId = null
+        } = {}
+        ) {
             this.playerId = playerId;
             this.playerName = playerName;
             /**
@@ -19,6 +27,8 @@ if (typeof window !== 'undefined' && window.Player) {
              * - won
              */
             this.status = status;
+            this.level = level;
+            this.points = points;
             this.socketId = socketId;
         }
 
@@ -27,17 +37,21 @@ if (typeof window !== 'undefined' && window.Player) {
                 playerId: this.playerId,
                 playerName: this.playerName,
                 status: this.status,
+                level: this.level,
+                points: this.points,
                 socketId: this.socketId
             };
         }
 
         static fromJSON(json) {
-            return new Player(
-                json.playerId,
-                json.playerName,
-                json.status,
-                json.socketId
-            );
+            return new Player({
+                playerId: json.playerId,
+                playerName: json.playerName,
+                status: json.status,
+                level: json.level,
+                points: json.points,
+                socketId: json.socketId
+            });
         }
     }
 

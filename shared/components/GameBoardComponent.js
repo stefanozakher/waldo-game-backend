@@ -1,5 +1,5 @@
 // Define some game rules
-const MAX_MISSED_HITS = 3;
+const MISSED_HITS_TO_TRIGGER_PENALTY = 3;
 const MISSED_HITS_TIME_THRESHOLD = 5000; // milliseconds
 const MISSED_HIT_MESSAGE_DURATION = 1000; // milliseconds
 const MISSED_HIT_MESSAGES = ['Missed!', 'Try again!', 'Not quite!', 'Still no!', 'Really? Try again!'];
@@ -203,16 +203,16 @@ class GameBoardComponent {
         const y = displayY * scaleY;
 
         const currentLevel = this.gameSession.getCurrentLevel();
-        
+
         if (currentLevel && currentLevel.targetArea) {
             const { xMin, xMax, yMin, yMax } = currentLevel.targetArea;
 
             if (x >= xMin && x <= xMax && y >= yMin && y <= yMax) {
                 // Add your success logic here
-                this.guessSuccessful(event, timeOfClick);
+                this.guessSuccess(event, timeOfClick);
             } else {
                 // Add your miss logic here
-                this.guessUnsuccessful(event, timeOfClick);
+                this.guessFailed(event, timeOfClick);
             }
         } else {
             console.error('No target area defined for current level:', {
@@ -223,7 +223,7 @@ class GameBoardComponent {
         }
     }
 
-    guessSuccessful(event, timeOfClick) {
+    guessSuccess(event, timeOfClick) {
         showClickMessage(event.clientX, event.clientY, HIT_MESSAGE, HIT_MESSAGE_DURATION);
         sendSystemMessage(new Message({
             message: `${this.gameSession.playerlist.currentPlayer.playerName} found him in level ${this.gameSession.getCurrentLevel().title}!`,
@@ -232,10 +232,10 @@ class GameBoardComponent {
         this.gameSession.nextLevel();
     }
 
-    guessUnsuccessful(event, timeOfClick) {
-        if (this.registeredMissedHits.length >= MAX_MISSED_HITS) {
+    guessFailed(event, timeOfClick) {
+        if (this.registeredMissedHits.length >= MISSED_HITS_TO_TRIGGER_PENALTY) {
             if ((timeOfClick - this.registeredMissedHits[0]) < MISSED_HITS_TIME_THRESHOLD) {
-                // Penalty is active
+                // Activate penalty
                 if (!isPenaltyActive) {
                     isPenaltyActive = true;
                     showClickMessage(event.clientX, event.clientY, PENALTY_MESSAGE, PENALTY_TIME);
@@ -268,5 +268,28 @@ class GameBoardComponent {
 
         this.setupGameBoardZoom();
         this.setupGuessingWaldoEvent();
+    }
+
+    renderOverlayMessage(message) {
+        const overlay = document.getElementById('overlay');
+
+        if (!overlay) return;
+
+        overlay.innerHTML = message;
+        overlay.style.display = 'block';
+        overlay.classList.remove('d-none'); // Reset animation
+        overlay.classList.remove('fade-out'); // Reset animation
+
+        overlay.addEventListener('animationend', (event) => {
+            if (event.animationName === 'fadeOut') {
+                console.log('Fade-out animation has completed.');
+                // Perform additional logic here, e.g., hiding the element
+                overlay.style.display = 'none';
+            }
+        });
+
+        setTimeout(() => {
+            overlay.classList.add('fade-out');
+        }, 2000); // Adjust the delay as needed
     }
 }

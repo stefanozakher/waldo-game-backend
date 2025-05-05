@@ -39,7 +39,10 @@ if (typeof window !== 'undefined' && window.PlayerList) {
                 console.log('Retrieved existing player ID:', waldoPlayer.playerId, 'and name:', waldoPlayer.playerName);
             }
 
-            this.state.currentPlayer = new Player(waldoPlayer.playerId, waldoPlayer.playerName);
+            this.state.currentPlayer = new Player({
+                playerId: waldoPlayer.playerId,
+                playerName: waldoPlayer.playerName
+            });
 
             return this.state.currentPlayer;
         }
@@ -53,7 +56,11 @@ if (typeof window !== 'undefined' && window.PlayerList) {
         addPlayer(playerData) {
             const player = playerData instanceof Player ? 
                 playerData : 
-                new Player(playerData.playerId, playerData.playerName, playerData.status);
+                new Player({
+                    playerId: playerData.playerId,
+                    playerName: playerData.playerName,
+                    status: playerData.status
+                });
 
             const existingIndex = this.state.players.findIndex(p => p.playerId === player.playerId);
             if (existingIndex !== -1) {
@@ -117,7 +124,12 @@ if (typeof window !== 'undefined' && window.PlayerList) {
 
         sync(players) {
             this.state.players = players.map(p => 
-                new Player(p.playerId, p.playerName, p.status, p.socketId)
+                new Player({
+                    playerId: p.playerId,
+                    playerName: p.playerName,
+                    status: p.status,
+                    socketId: p.socketId
+                })
             );
         }
 
